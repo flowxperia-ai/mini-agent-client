@@ -1,0 +1,71 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --color-brand-50: #f4f2ff;
+  --color-brand-100: #e9e6ff;
+  --color-brand-200: #d4cdff;
+  --color-brand-300: #b3a6ff;
+  --color-brand-400: #9180fd;
+  --color-brand-500: #7b68fc;
+  --color-brand-600: #6d5dfc;
+  --color-brand-700: #5a45e6;
+  --color-brand-800: #4936bd;
+  --color-brand-900: #3b2e93;
+  --color-brand-950: #231a5c;
+
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 3px rgb(15 23 42 / 0.06);
+  --shadow-float: 0 24px 48px -16px rgb(15 23 42 / 0.25), 0 8px 16px -8px rgb(15 23 42 / 0.12);
+
+  --animate-fade-in: fade-in 0.25s ease-out both;
+  --animate-rise: rise 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes shimmer {
+    from { background-position: -400px 0; }
+    to { background-position: 400px 0; }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-slate-50 text-slate-900;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-500;
+  }
+  ::selection {
+    @apply bg-brand-200 text-brand-950;
+  }
+}
+
+@layer components {
+  .skeleton {
+    background: linear-gradient(90deg, #eef1f5 0%, #f7f8fa 40%, #eef1f5 80%);
+    background-size: 800px 100%;
+    @apply animate-shimmer rounded-lg;
+  }
+  .bg-grid {
+    background-image: linear-gradient(to right, rgb(15 23 42 / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(15 23 42 / 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+}
