@@ -114,11 +114,6 @@ function HeroVisual() {
                 </span>
               </div>
             </div>
-            <div className="p-2.5">
-              <div className="flex items-center justify-center gap-1 rounded-xl bg-brand-600 py-2 text-xs font-bold text-white">
-                Start free trial <ArrowRight className="size-3.5" />
-              </div>
-            </div>
           </div>
           <span className="absolute right-[13.5rem] bottom-10 hidden animate-bounce text-2xl sm:right-[15.5rem] sm:block">👋</span>
         </div>
@@ -151,7 +146,7 @@ export default function LandingPage() {
     () =>
       config.mockProviders?.heygen
         ? buildPreviewConfig({
-            widget: { primaryCtaText: 'Start free trial', primaryCtaUrl: 'https://example.com/trial', delay: 0, attentionAnimation: 'wave' },
+            widget: { delay: 0, attentionAnimation: 'wave' },
             video: {
               videoUrl: `${config.widget.apiUrl}/mock-assets/sample-avatar.mp4`,
               thumbnailUrl: `${config.widget.apiUrl}/mock-assets/sample-avatar.jpg`,
