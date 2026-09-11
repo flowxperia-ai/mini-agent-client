@@ -7,6 +7,7 @@ import { AuthLayout } from './layouts/AuthLayout.jsx';
 import { DashboardLayout } from './layouts/DashboardLayout.jsx';
 import { MarketingLayout } from './layouts/MarketingLayout.jsx';
 import { AdminRoute, GuestRoute, ProtectedRoute } from './routes/guards.jsx';
+import { useKeepAlive } from './hooks/useKeepAlive.js';
 import { useAuthStore } from './store/authStore.js';
 import { useConfigStore } from './store/configStore.js';
 
@@ -39,6 +40,7 @@ function ScrollToTop() {
 export default function App() {
   const initAuth = useAuthStore((s) => s.init);
   const loadConfig = useConfigStore((s) => s.load);
+  useKeepAlive();
 
   useEffect(() => {
     loadConfig();
