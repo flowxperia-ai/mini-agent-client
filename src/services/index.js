@@ -47,6 +47,7 @@ export const videoService = {
 
 export const widgetService = {
   list: () => api.get('/widgets'),
+  getPrimary: () => api.get('/widgets/primary'),
   get: (id) => api.get(`/widgets/${id}`),
   create: (body) => api.post('/widgets', body),
   update: (id, body) => api.patch(`/widgets/${id}`, body),

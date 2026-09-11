@@ -1,6 +1,7 @@
 import { ArrowRight, CheckCircle2, Circle, Coins, CreditCard, Film, Plus, Sparkles, UserRound } from 'lucide-react';
 import { Link } from 'react-router';
 import { PageHeader } from '../../components/PageHeader.jsx';
+import { PrimaryWidgetCard } from '../../components/PrimaryWidgetCard.jsx';
 import { StatusBadge } from '../../components/StatusBadge.jsx';
 import { VideoThumb } from '../../components/VideoCard.jsx';
 import { Button } from '../../components/ui/Button.jsx';
@@ -79,6 +80,10 @@ export default function DashboardHome() {
           </Button>
         }
       />
+
+      <div className="mb-6">
+        <PrimaryWidgetCard />
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {!data ? (
