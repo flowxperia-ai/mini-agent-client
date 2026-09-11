@@ -199,7 +199,7 @@ function GenerationView({ videoId, onRestart }) {
   const createWidget = async () => {
     setCreating(true);
     try {
-      const existing = video.widgets[0];
+      const existing = video.widgets?.[0];
       const { widget } = existing ? { widget: existing } : await widgetService.create({ videoId: video.id });
       toast.success(existing ? 'Opening your widget' : 'Widget created — customise it and copy the embed code');
       navigate(`/dashboard/widgets/${widget.id}`);
@@ -239,7 +239,7 @@ function GenerationView({ videoId, onRestart }) {
               </p>
               <div className="flex flex-wrap gap-2">
                 <Button icon={Wand2} onClick={createWidget} loading={creating}>
-                  {video.widgets.length ? 'Open widget' : 'Create embeddable widget'}
+                  {video.widgets?.length ? 'Open widget' : 'Create embeddable widget'}
                 </Button>
                 <Button variant="secondary" to={`/dashboard/videos/${video.id}`}>
                   View details

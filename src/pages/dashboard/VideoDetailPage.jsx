@@ -122,7 +122,7 @@ export default function VideoDetailPage() {
 
         <div className="space-y-6">
           <Card>
-            <CardHeader title="Script" icon={Captions} description={video.captions.length ? `${video.captions.length} caption segments` : undefined} />
+            <CardHeader title="Script" icon={Captions} description={video.captions?.length ? `${video.captions.length} caption segments` : undefined} />
             <CardBody>
               <p className="text-[15px] leading-relaxed whitespace-pre-line text-slate-700">{video.script}</p>
             </CardBody>
