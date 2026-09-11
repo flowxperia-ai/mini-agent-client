@@ -6,12 +6,14 @@ import { Badge } from './ui/Badge.jsx';
 export function PlanCard({ plan, current = false, highlighted = false, action, className }) {
   if (!plan) return null;
   const growth = plan.id === 'GROWTH';
+  const comingSoon = growth && !current;
   const Icon = growth ? Sparkles : UserRound;
   return (
     <div
       className={cn(
         'relative flex flex-col rounded-3xl p-6 ring-1 transition sm:p-7',
         highlighted ? 'bg-slate-950 text-white ring-slate-900 shadow-float' : 'bg-white text-slate-900 ring-slate-200 shadow-card',
+        comingSoon && 'opacity-75',
         className,
       )}
     >
@@ -19,7 +21,13 @@ export function PlanCard({ plan, current = false, highlighted = false, action, c
         <span className={cn('grid size-10 place-items-center rounded-xl', highlighted ? 'bg-white/10 text-brand-300' : 'bg-brand-50 text-brand-600')}>
           <Icon className="size-5" />
         </span>
-        {current ? <Badge tone={highlighted ? 'dark' : 'brand'}>Current plan</Badge> : growth ? <Badge tone="brand">Your own spokesperson</Badge> : null}
+        {current ? (
+          <Badge tone={highlighted ? 'dark' : 'brand'}>Current plan</Badge>
+        ) : comingSoon ? (
+          <Badge tone="amber">Coming soon</Badge>
+        ) : growth ? (
+          <Badge tone="brand">Your own spokesperson</Badge>
+        ) : null}
       </div>
       <h3 className="mt-5 text-xl font-bold tracking-tight">{plan.name}</h3>
       <p className={cn('mt-1 text-[15px]', highlighted ? 'text-slate-300' : 'text-slate-600')}>{plan.tagline}</p>
@@ -47,7 +55,11 @@ export function PlanCard({ plan, current = false, highlighted = false, action, c
           </li>
         ))}
       </ul>
-      {action && <div className="mt-7 pt-1">{action}</div>}
+      {comingSoon ? (
+        <p className={cn('mt-7 pt-1 text-center text-sm font-medium', highlighted ? 'text-slate-400' : 'text-slate-400')}>Coming soon</p>
+      ) : (
+        action && <div className="mt-7 pt-1">{action}</div>
+      )}
     </div>
   );
 }
