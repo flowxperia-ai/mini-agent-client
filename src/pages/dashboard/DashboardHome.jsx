@@ -35,9 +35,10 @@ function StatCard({ icon: Icon, label, value, sub, to, tone = 'brand' }) {
 }
 
 function avatarStatus(plan, avatars) {
-  if (!avatars) return { value: '—', sub: null, tone: 'slate' };
-  if (plan === 'STARTER') return { value: `${avatars.avatars.length} avatars`, sub: 'Stock library ready to use', tone: 'green' };
-  const twin = avatars.avatars[0];
+  const list = avatars?.avatars;
+  if (!list) return { value: '—', sub: null, tone: 'slate' };
+  if (plan === 'STARTER') return { value: `${list.length} avatars`, sub: 'Stock library ready to use', tone: 'green' };
+  const twin = list[0];
   if (!twin) return { value: 'Not created', sub: 'Create your digital twin', tone: 'amber' };
   if (twin.isReady) return { value: 'Ready', sub: `${twin.name} · consent approved`, tone: 'green' };
   return { value: <StatusBadge kind="consent" status={twin.consent?.status} size="md" />, sub: `${twin.name} · finish consent to generate`, tone: 'amber' };
@@ -54,10 +55,10 @@ export default function DashboardHome() {
 
   const user = data?.user;
   const status = avatarStatus(user?.plan, avatars);
-  const hasCredits = (data?.credits.available ?? 0) + (data?.credits.lifetimeSpent ?? 0) > 0;
-  const avatarReady = user?.plan === 'STARTER' ? true : Boolean(avatars?.avatars.some((a) => a.isReady));
-  const hasVideo = (data?.stats.videosGenerated ?? 0) > 0;
-  const hasWidget = data?.recentVideos.some((v) => v.widgets.length > 0);
+  const hasCredits = (data?.credits?.available ?? 0) + (data?.credits?.lifetimeSpent ?? 0) > 0;
+  const avatarReady = user?.plan === 'STARTER' ? true : Boolean(avatars?.avatars?.some((a) => a.isReady));
+  const hasVideo = (data?.stats?.videosGenerated ?? 0) > 0;
+  const hasWidget = data?.recentVideos?.some((v) => v.widgets.length > 0);
   const checklist = [
     { done: hasCredits, label: 'Buy credits', to: '/dashboard/billing' },
     { done: avatarReady, label: user?.plan === 'GROWTH' ? 'Create your digital twin & approve consent' : 'Pick a stock avatar', to: user?.plan === 'GROWTH' ? '/dashboard/avatars' : '/dashboard/create' },

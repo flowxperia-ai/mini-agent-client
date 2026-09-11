@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router';
+import { RouteErrorBoundary } from './components/RouteErrorBoundary.jsx';
 import { Toaster } from './components/ui/Toast.jsx';
 import { LoadingState } from './components/ui/States.jsx';
 import { AuthLayout } from './layouts/AuthLayout.jsx';
@@ -47,44 +48,46 @@ export default function App() {
   return (
     <>
       <ScrollToTop />
-      <Suspense fallback={<LoadingState className="min-h-[60vh]" />}>
-        <Routes>
-          <Route element={<MarketingLayout />}>
-            <Route index element={<LandingPage />} />
-            <Route path="pricing" element={<PricingPage />} />
-          </Route>
-
-          <Route element={<GuestRoute />}>
-            <Route element={<AuthLayout />}>
-              <Route path="login" element={<LoginPage />} />
-              <Route path="register" element={<RegisterPage />} />
+      <RouteErrorBoundary>
+        <Suspense fallback={<LoadingState className="min-h-[60vh]" />}>
+          <Routes>
+            <Route element={<MarketingLayout />}>
+              <Route index element={<LandingPage />} />
+              <Route path="pricing" element={<PricingPage />} />
             </Route>
-          </Route>
 
-          <Route element={<ProtectedRoute />}>
-            <Route path="dashboard" element={<DashboardLayout />}>
-              <Route index element={<DashboardHome />} />
-              <Route path="create" element={<CreateVideoPage />} />
-              <Route path="videos" element={<VideosPage />} />
-              <Route path="videos/:id" element={<VideoDetailPage />} />
-              <Route path="avatars" element={<AvatarsPage />} />
-              <Route path="credits" element={<CreditsPage />} />
-              <Route path="billing" element={<BillingPage />} />
-              <Route path="billing/mock-checkout" element={<MockCheckoutPage />} />
-              <Route path="settings" element={<SettingsPage />} />
-              <Route path="widgets/:id" element={<WidgetEditorPage />} />
-            </Route>
-            <Route element={<AdminRoute />}>
-              <Route path="admin" element={<DashboardLayout />}>
-                <Route index element={<AdminPage />} />
+            <Route element={<GuestRoute />}>
+              <Route element={<AuthLayout />}>
+                <Route path="login" element={<LoginPage />} />
+                <Route path="register" element={<RegisterPage />} />
               </Route>
             </Route>
-            <Route path="mock/heygen-consent" element={<MockConsentPage />} />
-          </Route>
 
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </Suspense>
+            <Route element={<ProtectedRoute />}>
+              <Route path="dashboard" element={<DashboardLayout />}>
+                <Route index element={<DashboardHome />} />
+                <Route path="create" element={<CreateVideoPage />} />
+                <Route path="videos" element={<VideosPage />} />
+                <Route path="videos/:id" element={<VideoDetailPage />} />
+                <Route path="avatars" element={<AvatarsPage />} />
+                <Route path="credits" element={<CreditsPage />} />
+                <Route path="billing" element={<BillingPage />} />
+                <Route path="billing/mock-checkout" element={<MockCheckoutPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+                <Route path="widgets/:id" element={<WidgetEditorPage />} />
+              </Route>
+              <Route element={<AdminRoute />}>
+                <Route path="admin" element={<DashboardLayout />}>
+                  <Route index element={<AdminPage />} />
+                </Route>
+              </Route>
+              <Route path="mock/heygen-consent" element={<MockConsentPage />} />
+            </Route>
+
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
+      </RouteErrorBoundary>
       <Toaster />
     </>
   );
