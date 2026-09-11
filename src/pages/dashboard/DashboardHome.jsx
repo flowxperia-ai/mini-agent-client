@@ -46,7 +46,7 @@ function avatarStatus(plan, avatars) {
 
 export default function DashboardHome() {
   useDocumentTitle('Dashboard');
-  const { data, loading, error, refetch } = useApi(() => userService.dashboard(), [], {
+  const { data, error, refetch } = useApi(() => userService.dashboard(), [], {
     poll: (d) => (d?.stats?.videosProcessing ? 5000 : null),
   });
   const { data: avatars } = useApi(() => avatarService.list(), []);
@@ -81,7 +81,7 @@ export default function DashboardHome() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {loading && !data ? (
+        {!data ? (
           Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-[124px] rounded-2xl" />)
         ) : (
           <>
@@ -124,7 +124,7 @@ export default function DashboardHome() {
               </Button>
             }
           />
-          {loading && !data ? (
+          {!data ? (
             <div className="space-y-3 p-5">
               {Array.from({ length: 3 }, (_, i) => (
                 <Skeleton key={i} className="h-16" />

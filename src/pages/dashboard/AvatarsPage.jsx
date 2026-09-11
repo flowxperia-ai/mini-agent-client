@@ -416,7 +416,7 @@ export default function AvatarsPage() {
 
       {error ? (
         <ErrorState error={error} onRetry={refetch} />
-      ) : loading ? (
+      ) : loading || !data ? (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {Array.from({ length: growth ? 1 : 10 }, (_, i) => (
             <Skeleton key={i} className={growth ? 'col-span-full h-72 rounded-2xl' : 'aspect-[4/6] rounded-2xl'} />

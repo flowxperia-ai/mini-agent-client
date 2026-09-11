@@ -29,7 +29,7 @@ export default function VideosPage() {
   const [page, setPage] = useState(1);
   const [toDelete, setToDelete] = useState(null);
 
-  const { data, loading, error, refetch } = useApi(() => videoService.list({ status: filter, page, limit: PAGE_SIZE }), [filter, page], {
+  const { data, error, refetch } = useApi(() => videoService.list({ status: filter, page, limit: PAGE_SIZE }), [filter, page], {
     poll: (d) => (d?.items?.some((v) => v.status === 'QUEUED' || v.status === 'PROCESSING') ? 4000 : null),
   });
 
@@ -93,7 +93,7 @@ export default function VideosPage() {
 
       {error ? (
         <ErrorState error={error} onRetry={refetch} />
-      ) : loading && !data ? (
+      ) : !data ? (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 8 }, (_, i) => (
             <Skeleton key={i} className="aspect-[4/6] rounded-2xl" />
