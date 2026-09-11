@@ -33,7 +33,22 @@ export function onSessionExpired(listener) {
 }
 
 api.interceptors.response.use(
-  (response) => response.data?.data ?? response.data,
+  (response) => {
+    const body = response.data;
+    // The server always wraps success as `{ success: true, data }`. Anything else — an empty
+    // body, a truncated response, a Cloudflare/Render error page served with a 2xx status during
+    // a cold start — is not usable data. Reject it as an error instead of handing pages a
+    // malformed object, so the one `if (error) return <ErrorState />` check every page already
+    // has covers this, rather than every page needing to defend against every possible shape.
+    if (body && typeof body === 'object' && body.success === true) return body.data;
+    return Promise.reject(
+      new ApiError({
+        status: response.status,
+        code: 'INVALID_RESPONSE',
+        message: 'Unexpected response from the server. Please try again.',
+      }),
+    );
+  },
   (error) => {
     if (axios.isCancel(error)) return Promise.reject(error);
     if (!error.response) {
