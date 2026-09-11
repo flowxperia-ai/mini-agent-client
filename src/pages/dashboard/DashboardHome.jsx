@@ -58,7 +58,7 @@ export default function DashboardHome() {
   const hasCredits = (data?.credits?.available ?? 0) + (data?.credits?.lifetimeSpent ?? 0) > 0;
   const avatarReady = user?.plan === 'STARTER' ? true : Boolean(avatars?.avatars?.some((a) => a.isReady));
   const hasVideo = (data?.stats?.videosGenerated ?? 0) > 0;
-  const hasWidget = data?.recentVideos?.some((v) => v.widgets.length > 0);
+  const hasWidget = data?.recentVideos?.some((v) => (v.widgets?.length ?? 0) > 0);
   const checklist = [
     { done: hasCredits, label: 'Buy credits', to: '/dashboard/billing' },
     { done: avatarReady, label: user?.plan === 'GROWTH' ? 'Create your digital twin & approve consent' : 'Pick a stock avatar', to: user?.plan === 'GROWTH' ? '/dashboard/avatars' : '/dashboard/create' },
@@ -71,7 +71,7 @@ export default function DashboardHome() {
     <div className="animate-rise">
       <PageHeader
         eyebrow="Overview"
-        title={user ? `${greeting()}, ${user.name.split(' ')[0]}` : 'Dashboard'}
+        title={user?.name ? `${greeting()}, ${user.name.split(' ')[0]}` : 'Dashboard'}
         description="Create spokesperson videos, embed them on your site and keep an eye on your credits."
         actions={
           <Button to="/dashboard/create" icon={Plus} size="md">
@@ -88,23 +88,23 @@ export default function DashboardHome() {
             <StatCard
               icon={Sparkles}
               label="Current plan"
-              value={data.plan.name}
-              sub={data.plan.tagline}
+              value={data.plan?.name ?? '—'}
+              sub={data.plan?.tagline}
               to="/dashboard/billing"
             />
             <StatCard
               icon={Coins}
               label="Available credits"
-              value={formatNumber(data.credits.available)}
-              sub={data.credits.reserved ? `${formatNumber(data.credits.reserved)} reserved in progress` : `${data.plan.creditsPerMinute} credits per video minute`}
+              value={formatNumber(data.credits?.available ?? 0)}
+              sub={data.credits?.reserved ? `${formatNumber(data.credits.reserved)} reserved in progress` : `${data.plan?.creditsPerMinute ?? 0} credits per video minute`}
               to="/dashboard/credits"
-              tone={data.credits.available < 20 ? 'amber' : 'brand'}
+              tone={(data.credits?.available ?? 0) < 20 ? 'amber' : 'brand'}
             />
             <StatCard
               icon={Film}
               label="Videos generated"
-              value={formatNumber(data.stats.videosGenerated)}
-              sub={data.stats.videosProcessing ? `${data.stats.videosProcessing} generating now` : 'All caught up'}
+              value={formatNumber(data.stats?.videosGenerated ?? 0)}
+              sub={data.stats?.videosProcessing ? `${data.stats.videosProcessing} generating now` : 'All caught up'}
               to="/dashboard/videos"
               tone="green"
             />
@@ -130,7 +130,7 @@ export default function DashboardHome() {
                 <Skeleton key={i} className="h-16" />
               ))}
             </div>
-          ) : data.recentVideos.length === 0 ? (
+          ) : (data.recentVideos?.length ?? 0) === 0 ? (
             <div className="p-5">
               <EmptyState
                 icon={Film}
@@ -145,7 +145,7 @@ export default function DashboardHome() {
             </div>
           ) : (
             <ul className="divide-y divide-slate-100">
-              {data.recentVideos.map((video) => (
+              {(data.recentVideos ?? []).map((video) => (
                 <li key={video.id}>
                   <Link to={`/dashboard/videos/${video.id}`} className="flex items-center gap-4 px-5 py-3.5 transition hover:bg-slate-50 sm:px-6">
                     <VideoThumb video={video} className="w-11 shrink-0 rounded-lg" />
