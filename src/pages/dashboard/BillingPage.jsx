@@ -29,7 +29,7 @@ export default function BillingPage() {
 
   const products = useApi(() => billingService.packages(), []);
   const history = useApi(() => billingService.transactions({ page, limit: 10 }), [page], {
-    poll: (d) => (d?.items.some((p) => p.status === 'PENDING') && checkout === 'success' ? 2500 : null),
+    poll: (d) => (d?.items?.some((p) => p.status === 'PENDING') && checkout === 'success' ? 2500 : null),
   });
 
   // Credits are granted by the payment webhook, not the redirect — refresh until it lands.

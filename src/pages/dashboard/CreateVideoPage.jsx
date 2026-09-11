@@ -187,7 +187,7 @@ function GenerationView({ videoId, onRestart }) {
   const refreshUser = useAuthStore((s) => s.refreshUser);
   const [creating, setCreating] = useState(false);
   const { data, error, refetch } = useApi(() => videoService.get(videoId), [videoId], {
-    poll: (d) => (d && ['QUEUED', 'PROCESSING'].includes(d.video.status) ? 3000 : null),
+    poll: (d) => (d?.video && ['QUEUED', 'PROCESSING'].includes(d.video.status) ? 3000 : null),
   });
   const video = data?.video;
   const status = video?.status;

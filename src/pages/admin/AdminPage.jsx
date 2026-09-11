@@ -181,7 +181,7 @@ function GenerationsTab() {
   const [status, setStatus] = useState('all');
   const [page, setPage] = useState(1);
   const { data, loading, error, refetch } = useApi(() => adminService.generations({ status, page, limit: 20 }), [status, page], {
-    poll: (d) => (d?.items.some((g) => ['QUEUED', 'PROCESSING'].includes(g.status)) ? 5000 : null),
+    poll: (d) => (d?.items?.some((g) => ['QUEUED', 'PROCESSING'].includes(g.status)) ? 5000 : null),
   });
   const act = async (fn, id, message) => {
     try {

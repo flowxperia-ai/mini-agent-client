@@ -34,7 +34,7 @@ export default function VideoDetailPage() {
   const [creating, setCreating] = useState(false);
 
   const { data, loading, error, refetch } = useApi(() => videoService.get(id), [id], {
-    poll: (d) => (d && ['QUEUED', 'PROCESSING'].includes(d.video.status) ? 3000 : null),
+    poll: (d) => (d?.video && ['QUEUED', 'PROCESSING'].includes(d.video.status) ? 3000 : null),
   });
   const video = data?.video;
   const widgetRef = video?.widgets?.[0];

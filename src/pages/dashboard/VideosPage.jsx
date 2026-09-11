@@ -30,7 +30,7 @@ export default function VideosPage() {
   const [toDelete, setToDelete] = useState(null);
 
   const { data, loading, error, refetch } = useApi(() => videoService.list({ status: filter, page, limit: PAGE_SIZE }), [filter, page], {
-    poll: (d) => (d?.items.some((v) => v.status === 'QUEUED' || v.status === 'PROCESSING') ? 4000 : null),
+    poll: (d) => (d?.items?.some((v) => v.status === 'QUEUED' || v.status === 'PROCESSING') ? 4000 : null),
   });
 
   const handleEmbed = async (video) => {

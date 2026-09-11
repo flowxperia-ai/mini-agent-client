@@ -46,7 +46,7 @@ function avatarStatus(plan, avatars) {
 export default function DashboardHome() {
   useDocumentTitle('Dashboard');
   const { data, loading, error, refetch } = useApi(() => userService.dashboard(), [], {
-    poll: (d) => (d?.stats.videosProcessing ? 5000 : null),
+    poll: (d) => (d?.stats?.videosProcessing ? 5000 : null),
   });
   const { data: avatars } = useApi(() => avatarService.list(), []);
 
