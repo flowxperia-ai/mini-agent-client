@@ -64,6 +64,9 @@ export function createGenerateVideoSchema(limits) {
       avatarId: objectId,
       title: optional(z.string().trim().max(100, 'Title must be 100 characters or fewer')),
       gesture: z.enum(GESTURES).default('none'),
+      // Starter only — picks a pricier, more expressive HeyGen engine for this video. Ignored
+      // (silently treated as 'normal') for plans that don't define an expressive tier.
+      avatarStyle: z.enum(['normal', 'expressive']).default('normal'),
       ...scriptShape(limits),
     })
     .superRefine(refineScript(limits));

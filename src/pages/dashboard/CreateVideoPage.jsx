@@ -292,13 +292,19 @@ export default function CreateVideoPage() {
   } = useForm({
     resolver: zodResolver(schema),
     mode: 'onTouched',
-    defaultValues: { avatarId: '', title: '', script: '', gesture: 'none', ctaUrl: '' },
+    defaultValues: { avatarId: '', title: '', script: '', gesture: 'none', ctaUrl: '', avatarStyle: 'normal' },
   });
 
   const script = watch('script') ?? '';
   const gesture = watch('gesture');
+  const avatarStyle = watch('avatarStyle');
+  // Only offered on plans that define an expressive tier (Starter today) — /api/config simply
+  // omits expressiveCreditsPerMinute for plans that don't have one.
+  const expressiveAvailable = Boolean(plan?.expressiveCreditsPerMinute);
+  const expressive = expressiveAvailable && avatarStyle === 'expressive';
+  const effectiveCreditsPerMinute = expressive ? plan.expressiveCreditsPerMinute : plan?.creditsPerMinute;
   const seconds = estimateDurationSeconds(script, config.script.wordsPerMinute);
-  const credits = estimateCredits(seconds, plan?.creditsPerMinute, config.credits.minPerVideo);
+  const credits = estimateCredits(seconds, effectiveCreditsPerMinute, config.credits.minPerVideo);
   const insufficient = (user.credits ?? 0) < credits;
 
   const selectAvatar = (a) => {
@@ -372,13 +378,47 @@ export default function CreateVideoPage() {
                     setValue={setValue}
                     script={script}
                     limits={config.script}
-                    creditsPerMinute={plan?.creditsPerMinute}
+                    creditsPerMinute={effectiveCreditsPerMinute}
                     minCredits={config.credits.minPerVideo}
                     mockFailToken={config.mockFailToken}
                   />
                 </CardBody>
               </Card>
               <div className="space-y-4">
+                {expressiveAvailable && (
+                  <Card>
+                    <CardBody>
+                      <p className="text-sm font-semibold text-slate-900">Avatar style</p>
+                      <p className="mt-0.5 text-xs text-slate-500">Expressive uses a higher-fidelity engine with more natural motion, at a higher credit rate.</p>
+                      <div className="mt-3 grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setValue('avatarStyle', 'normal')}
+                          className={cn(
+                            'rounded-xl p-2.5 text-left text-xs font-medium ring-1 transition',
+                            !expressive ? 'bg-brand-50 text-brand-800 ring-2 ring-brand-500' : 'bg-white text-slate-600 ring-slate-200 hover:ring-slate-300',
+                          )}
+                        >
+                          <p className="font-semibold">Normal</p>
+                          <p className="mt-0.5 text-slate-500">{plan?.creditsPerMinute} credits / min</p>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setValue('avatarStyle', 'expressive')}
+                          className={cn(
+                            'rounded-xl p-2.5 text-left text-xs font-medium ring-1 transition',
+                            expressive ? 'bg-brand-50 text-brand-800 ring-2 ring-brand-500' : 'bg-white text-slate-600 ring-slate-200 hover:ring-slate-300',
+                          )}
+                        >
+                          <p className="flex items-center gap-1 font-semibold">
+                            <Sparkles className="size-3.5" /> Expressive
+                          </p>
+                          <p className="mt-0.5 text-slate-500">{plan.expressiveCreditsPerMinute} credits / min</p>
+                        </button>
+                      </div>
+                    </CardBody>
+                  </Card>
+                )}
                 <Card>
                   <CardBody>
                     <p className="text-sm font-semibold text-slate-900">On-camera behaviour</p>
@@ -425,7 +465,10 @@ export default function CreateVideoPage() {
                     <div>
                       <p className="text-xs font-medium text-slate-500">Spokesperson</p>
                       <p className="text-base font-semibold text-slate-900">{avatar?.name}</p>
-                      <p className="text-xs text-slate-500">{GESTURE_LABELS[gesture]}</p>
+                      <p className="text-xs text-slate-500">
+                        {GESTURE_LABELS[gesture]}
+                        {expressive && ' · Expressive'}
+                      </p>
                     </div>
                     <Button variant="ghost" size="sm" className="ml-auto" onClick={() => setStep(0)}>
                       Change
@@ -457,7 +500,7 @@ export default function CreateVideoPage() {
                     </div>
                     <div className="flex justify-between">
                       <dt className="text-slate-500">Rate</dt>
-                      <dd className="font-semibold">{plan?.creditsPerMinute} credits / min</dd>
+                      <dd className="font-semibold">{effectiveCreditsPerMinute} credits / min</dd>
                     </div>
                     <div className="flex justify-between border-t border-slate-100 pt-2.5">
                       <dt className="font-medium text-slate-700">Credits reserved</dt>
