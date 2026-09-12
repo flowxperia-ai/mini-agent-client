@@ -22,6 +22,8 @@ export function buildPreviewConfig({ widget = {}, video, avatar }) {
     width: Number(widget.width ?? 300),
     mobileBehavior: widget.mobileBehavior ?? 'compact',
     attentionAnimation: widget.attentionAnimation ?? 'wave',
+    offsetX: Number(widget.offsetX ?? 0),
+    offsetY: Number(widget.offsetY ?? 0),
     cta: widget.primaryCtaText && widget.primaryCtaUrl ? { text: widget.primaryCtaText, url: widget.primaryCtaUrl } : null,
     spokesperson: { name: avatar?.name ?? video?.avatar?.name ?? 'Spokesperson', imageUrl: avatar?.thumbnailUrl ?? video?.avatar?.thumbnailUrl ?? video?.thumbnailUrl ?? null },
     video: {

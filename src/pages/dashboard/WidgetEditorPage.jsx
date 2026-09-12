@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Code2, Eye, Palette, Save, Settings2, Timer, Trash2 } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router';
-import { WIDGET_WIDTH } from '#shared/constants';
+import { WIDGET_OFFSET, WIDGET_WIDTH } from '#shared/constants';
 import { widgetFormSchema } from '#shared/schemas';
 import { EmbedCode } from '../../components/EmbedCode.jsx';
 import { PageHeader } from '../../components/PageHeader.jsx';
@@ -38,6 +38,8 @@ function toForm(widget) {
     width: widget.width,
     mobileBehavior: widget.mobileBehavior,
     attentionAnimation: widget.attentionAnimation,
+    offsetX: widget.offsetX ?? 0,
+    offsetY: widget.offsetY ?? 0,
     enabled: widget.enabled,
   };
 }
@@ -133,6 +135,25 @@ function Editor({ widget, onSaved }) {
                     name="theme"
                     render={({ field }) => <Segmented value={field.value} onChange={field.onChange} options={[{ value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]} />}
                   />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium text-slate-800">Corner offset</p>
+                  <span className="text-xs text-slate-500 tabular-nums">
+                    {values.offsetX}px across · {values.offsetY}px up
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500">Nudge the widget away from something else already in that corner of your site (a chat bubble, a cookie banner).</p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <label className="text-xs text-slate-500">Across</label>
+                    <input type="range" min={WIDGET_OFFSET.MIN} max={WIDGET_OFFSET.MAX} step={5} className="w-full accent-brand-600" {...register('offsetX', { valueAsNumber: true })} />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-500">Up</label>
+                    <input type="range" min={WIDGET_OFFSET.MIN} max={WIDGET_OFFSET.MAX} step={5} className="w-full accent-brand-600" {...register('offsetY', { valueAsNumber: true })} />
+                  </div>
                 </div>
               </div>
               <div className="space-y-1.5">

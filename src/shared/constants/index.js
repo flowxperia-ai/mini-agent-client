@@ -140,6 +140,12 @@ export const WIDGET_MOBILE_BEHAVIORS = Object.freeze(['compact', 'bubble', 'hidd
 export const WIDGET_ATTENTION_ANIMATIONS = Object.freeze(['wave', 'pulse', 'bounce', 'none']);
 export const WIDGET_WIDTH = Object.freeze({ MIN: 240, MAX: 380, DEFAULT: 300 });
 export const DEFAULT_ACCENT_COLOR = '#6d5dfc';
+/**
+ * Extra pixels added on top of the widget's built-in corner spacing (20px desktop, 14px mobile) —
+ * lets a site owner nudge the widget away from something else already in that corner (their own
+ * chat bubble, a cookie banner, etc.) instead of only choosing left vs right.
+ */
+export const WIDGET_OFFSET = Object.freeze({ MIN: 0, MAX: 300, DEFAULT: 0 });
 
 export const WIDGET_DEFAULTS = Object.freeze({
   position: 'bottom-right',
@@ -153,6 +159,8 @@ export const WIDGET_DEFAULTS = Object.freeze({
   width: WIDGET_WIDTH.DEFAULT,
   mobileBehavior: 'compact',
   attentionAnimation: 'wave',
+  offsetX: WIDGET_OFFSET.DEFAULT,
+  offsetY: WIDGET_OFFSET.DEFAULT,
   enabled: true,
 });
 

@@ -3,6 +3,7 @@ import {
   WIDGET_ATTENTION_ANIMATIONS,
   WIDGET_DELAYS,
   WIDGET_MOBILE_BEHAVIORS,
+  WIDGET_OFFSET,
   WIDGET_POSITIONS,
   WIDGET_THEMES,
   WIDGET_WIDTH,
@@ -31,6 +32,8 @@ export const widgetFieldsShape = {
   width: z.coerce.number().int().min(WIDGET_WIDTH.MIN).max(WIDGET_WIDTH.MAX),
   mobileBehavior: z.enum(WIDGET_MOBILE_BEHAVIORS),
   attentionAnimation: z.enum(WIDGET_ATTENTION_ANIMATIONS),
+  offsetX: z.coerce.number().int().min(WIDGET_OFFSET.MIN).max(WIDGET_OFFSET.MAX),
+  offsetY: z.coerce.number().int().min(WIDGET_OFFSET.MIN).max(WIDGET_OFFSET.MAX),
   enabled: z.boolean(),
 };
 
