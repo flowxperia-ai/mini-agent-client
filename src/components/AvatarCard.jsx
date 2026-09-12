@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, Eye, UserRound } from 'lucide-react';
+import { Check, Eye, Sparkles, UserRound } from 'lucide-react';
 import { cn } from '../utils/cn.js';
 import { StatusBadge } from './StatusBadge.jsx';
 import { Badge } from './ui/Badge.jsx';
@@ -73,6 +73,11 @@ export function AvatarCard({ avatar, selected = false, onSelect, disabled = fals
               <>
                 {avatar.gender && avatar.gender !== 'unknown' && <Badge>{GENDER_LABEL[avatar.gender]}</Badge>}
                 {avatar.style && <Badge tone="brand">{avatar.style}</Badge>}
+                {avatar.supportsExpressive && (
+                  <Badge tone="amber">
+                    <Sparkles className="size-3" /> Expressive
+                  </Badge>
+                )}
               </>
             )}
           </div>

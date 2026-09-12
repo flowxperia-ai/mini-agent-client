@@ -44,9 +44,6 @@ function StockLibrary({ avatars }) {
   const navigate = useNavigate();
   return (
     <>
-      <InlineAlert tone="brand" icon={Sparkles} className="mb-6" action={<Button size="sm" variant="secondary" to="/dashboard/billing">See Growth</Button>}>
-        Starter videos use avatars from our stock library. Want your own face on your website? The Growth plan creates a digital twin of you.
-      </InlineAlert>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
         {avatars.map((avatar) => (
           <AvatarCard key={avatar.id} avatar={avatar} onSelect={(a) => navigate(`/dashboard/create?avatar=${a.id}`)} />

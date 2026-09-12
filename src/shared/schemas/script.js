@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { GESTURES, SCRIPT_LIMITS } from '../constants/index.js';
+import { CUSTOM_MOTION_PROMPT_MAX_CHARS, GESTURES, SCRIPT_LIMITS } from '../constants/index.js';
 import { estimateDurationSeconds } from '../utils/script.js';
 import { httpUrl, objectId, optional } from './common.js';
 
@@ -64,10 +64,18 @@ export function createGenerateVideoSchema(limits) {
       avatarId: objectId,
       title: optional(z.string().trim().max(100, 'Title must be 100 characters or fewer')),
       gesture: z.enum(GESTURES).default('none'),
+      // Only required/used when gesture === 'custom' — a free-text motion instruction sent to
+      // HeyGen instead of one of the fixed presets.
+      customMotionPrompt: optional(z.string().trim().max(CUSTOM_MOTION_PROMPT_MAX_CHARS, `Custom motion must be ${CUSTOM_MOTION_PROMPT_MAX_CHARS} characters or fewer`)),
       // Starter only — picks a pricier, more expressive HeyGen engine for this video. Ignored
       // (silently treated as 'normal') for plans that don't define an expressive tier.
       avatarStyle: z.enum(['normal', 'expressive']).default('normal'),
       ...scriptShape(limits),
     })
-    .superRefine(refineScript(limits));
+    .superRefine(refineScript(limits))
+    .superRefine((value, ctx) => {
+      if (value.gesture === 'custom' && !value.customMotionPrompt) {
+        ctx.addIssue({ code: 'custom', path: ['customMotionPrompt'], message: 'Describe the motion you want, or choose a different behaviour.' });
+      }
+    });
 }

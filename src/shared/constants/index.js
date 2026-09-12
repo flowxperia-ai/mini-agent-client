@@ -106,13 +106,15 @@ export const WEBHOOK_EVENT_STATUS = Object.freeze({
  * Optional on-camera behaviour requested at generation time (Starter "wave / board / prop").
  * Sent to engines that support motion prompts; ignored by engines that do not.
  */
-export const GESTURES = Object.freeze(['none', 'wave', 'board', 'prop']);
+export const GESTURES = Object.freeze(['none', 'wave', 'board', 'prop', 'custom']);
 export const GESTURE_LABELS = Object.freeze({
   none: 'Natural',
   wave: 'Friendly wave',
   board: 'Present to a board',
   prop: 'Show a product',
+  custom: 'Custom motion',
 });
+export const CUSTOM_MOTION_PROMPT_MAX_CHARS = 300;
 
 export const SCRIPT_SOURCES = Object.freeze({
   MANUAL: 'MANUAL',

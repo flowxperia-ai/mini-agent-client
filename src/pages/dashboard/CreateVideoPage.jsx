@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router';
-import { GESTURES, GESTURE_LABELS } from '#shared/constants';
+import { CUSTOM_MOTION_PROMPT_MAX_CHARS, GESTURES, GESTURE_LABELS } from '#shared/constants';
 import { createGenerateVideoSchema } from '#shared/schemas';
 import { estimateDurationSeconds } from '#shared/utils';
 import { AvatarCard } from '../../components/AvatarCard.jsx';
@@ -31,7 +31,7 @@ import { StatusBadge } from '../../components/StatusBadge.jsx';
 import { VideoPlayer } from '../../components/VideoPlayer.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { Card, CardBody } from '../../components/ui/Card.jsx';
-import { Input, Segmented } from '../../components/ui/Field.jsx';
+import { Input, Segmented, Textarea } from '../../components/ui/Field.jsx';
 import { EmptyState, ErrorState, InlineAlert, Skeleton } from '../../components/ui/States.jsx';
 import { useApi } from '../../hooks/useApi.js';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle.js';
@@ -44,7 +44,7 @@ import { formatDuration, formatNumber } from '../../utils/format.js';
 import { newIdempotencyKey } from '../../utils/idempotency.js';
 
 const STEPS = ['Avatar', 'Script', 'Review'];
-const GESTURE_ICONS = { none: Smile, wave: Hand, board: Presentation, prop: Package };
+const GESTURE_ICONS = { none: Smile, wave: Hand, board: Presentation, prop: Package, custom: Wand2 };
 
 function Stepper({ step, onStep }) {
   return (
@@ -90,13 +90,18 @@ function AvatarStep({ user, selectedId, onSelect, initialAvatarId }) {
   }, [data, initialAvatarId, selectedId, onSelect]);
   const [style, setStyle] = useState('all');
   const [query, setQuery] = useState('');
+  const [expressiveOnly, setExpressiveOnly] = useState(false);
 
   const avatars = data?.avatars ?? [];
   const styles = useMemo(() => [...new Set(avatars.map((a) => a.style).filter(Boolean))].sort(), [avatars]);
+  // supportsExpressive is only present at all when the current plan has an expressive tier —
+  // absent entirely (e.g. Growth) means there's nothing to filter by.
+  const expressiveFilterAvailable = avatars.some((a) => a.supportsExpressive !== undefined);
   const filtered = avatars.filter(
     (a) =>
       (gender === 'all' || a.gender === gender) &&
       (style === 'all' || a.style === style) &&
+      (!expressiveOnly || a.supportsExpressive) &&
       (!query || a.name.toLowerCase().includes(query.toLowerCase())),
   );
 
@@ -166,6 +171,18 @@ function AvatarStep({ user, selectedId, onSelect, initialAvatarId }) {
               </button>
             ))}
           </div>
+          {expressiveFilterAvailable && (
+            <button
+              type="button"
+              onClick={() => setExpressiveOnly((v) => !v)}
+              className={cn(
+                'flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium ring-1 transition',
+                expressiveOnly ? 'bg-amber-500 text-white ring-amber-500' : 'bg-white text-slate-600 ring-slate-200 hover:ring-slate-300',
+              )}
+            >
+              <Sparkles className="size-3.5" /> Expressive-ready only
+            </button>
+          )}
         </div>
         <Input icon={Search} placeholder="Search avatars" value={query} onChange={(e) => setQuery(e.target.value)} className="lg:w-60" aria-label="Search avatars" />
       </div>
@@ -292,17 +309,22 @@ export default function CreateVideoPage() {
   } = useForm({
     resolver: zodResolver(schema),
     mode: 'onTouched',
-    defaultValues: { avatarId: '', title: '', script: '', gesture: 'none', ctaUrl: '', avatarStyle: 'normal' },
+    defaultValues: { avatarId: '', title: '', script: '', gesture: 'none', customMotionPrompt: '', ctaUrl: '', avatarStyle: 'normal' },
   });
 
   const script = watch('script') ?? '';
   const gesture = watch('gesture');
+  const customMotionPrompt = watch('customMotionPrompt');
   const avatarStyle = watch('avatarStyle');
   // Only offered on plans that define an expressive tier (Starter today) — /api/config simply
   // omits expressiveCreditsPerMinute for plans that don't have one.
   const expressiveAvailable = Boolean(plan?.expressiveCreditsPerMinute);
   const expressive = expressiveAvailable && avatarStyle === 'expressive';
-  const effectiveCreditsPerMinute = expressive ? plan.expressiveCreditsPerMinute : plan?.creditsPerMinute;
+  // Any gesture forces HeyGen's motion-capable engine — confirmed by a real test generation that
+  // motion_prompt is rejected on every other engine for every avatar this app uses. Overrides
+  // Avatar style entirely, same precedence the server enforces.
+  const motionRequested = gesture !== 'none';
+  const effectiveCreditsPerMinute = motionRequested ? config.motion.creditsPerMinute : expressive ? plan.expressiveCreditsPerMinute : plan?.creditsPerMinute;
   const seconds = estimateDurationSeconds(script, config.script.wordsPerMinute);
   const credits = estimateCredits(seconds, effectiveCreditsPerMinute, config.credits.minPerVideo);
   const insufficient = (user.credits ?? 0) < credits;
@@ -317,7 +339,7 @@ export default function CreateVideoPage() {
       if (!avatar) return toast.error('Choose an avatar to continue.');
       setStep(1);
     } else if (step === 1) {
-      const valid = await trigger(['title', 'script', 'ctaUrl']);
+      const valid = await trigger(['title', 'script', 'ctaUrl', 'customMotionPrompt']);
       if (valid) setStep(2);
     }
   };
@@ -422,18 +444,28 @@ export default function CreateVideoPage() {
                 <Card>
                   <CardBody>
                     <p className="text-sm font-semibold text-slate-900">On-camera behaviour</p>
-                    <p className="mt-0.5 text-xs text-slate-500">Applied when the avatar engine supports gestures.</p>
+                    <p className="mt-0.5 text-xs text-slate-500">
+                      {motionRequested
+                        ? `Gestures use a motion-capable engine at ${config.motion.creditsPerMinute} credits/min, overriding Avatar style above.`
+                        : 'Applied when the avatar engine supports gestures.'}
+                    </p>
                     <div className="mt-3 grid grid-cols-2 gap-2">
                       {GESTURES.map((g) => {
                         const Icon = GESTURE_ICONS[g];
+                        const locked = g !== 'none' && avatar?.supportsMotion === false;
                         return (
                           <button
                             key={g}
                             type="button"
-                            onClick={() => setValue('gesture', g)}
+                            disabled={locked}
+                            onClick={() => !locked && setValue('gesture', g)}
                             className={cn(
                               'flex flex-col items-start gap-1.5 rounded-xl p-2.5 text-left text-xs font-medium ring-1 transition',
-                              gesture === g ? 'bg-brand-50 text-brand-800 ring-2 ring-brand-500' : 'bg-white text-slate-600 ring-slate-200 hover:ring-slate-300',
+                              locked
+                                ? 'cursor-not-allowed bg-slate-50 text-slate-300 ring-slate-100'
+                                : gesture === g
+                                  ? 'bg-brand-50 text-brand-800 ring-2 ring-brand-500'
+                                  : 'bg-white text-slate-600 ring-slate-200 hover:ring-slate-300',
                             )}
                           >
                             <Icon className="size-4" />
@@ -442,6 +474,21 @@ export default function CreateVideoPage() {
                         );
                       })}
                     </div>
+                    {avatar?.supportsMotion === false && (
+                      <p className="mt-2 text-xs text-amber-700">This avatar doesn't support gestures. Pick a different avatar to use Wave, Board, Prop, or Custom motion.</p>
+                    )}
+                    {gesture === 'custom' && (
+                      <div className="mt-3">
+                        <Textarea
+                          label="Describe the motion"
+                          rows={2}
+                          placeholder="e.g. Lean forward and count on your fingers while explaining three benefits."
+                          maxLength={CUSTOM_MOTION_PROMPT_MAX_CHARS}
+                          error={errors.customMotionPrompt?.message}
+                          {...register('customMotionPrompt')}
+                        />
+                      </div>
+                    )}
                   </CardBody>
                 </Card>
                 <div className="rounded-2xl bg-slate-900 p-5 text-sm text-slate-300">
@@ -469,6 +516,9 @@ export default function CreateVideoPage() {
                         {GESTURE_LABELS[gesture]}
                         {expressive && ' · Expressive'}
                       </p>
+                      {gesture === 'custom' && customMotionPrompt && (
+                        <p className="mt-0.5 text-xs text-slate-400 italic">“{customMotionPrompt}”</p>
+                      )}
                     </div>
                     <Button variant="ghost" size="sm" className="ml-auto" onClick={() => setStep(0)}>
                       Change
