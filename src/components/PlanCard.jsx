@@ -6,14 +6,12 @@ import { Badge } from './ui/Badge.jsx';
 export function PlanCard({ plan, current = false, highlighted = false, action, className }) {
   if (!plan) return null;
   const growth = plan.id === 'GROWTH';
-  const comingSoon = growth && !current;
   const Icon = growth ? Sparkles : UserRound;
   return (
     <div
       className={cn(
         'relative flex flex-col rounded-3xl p-6 ring-1 transition sm:p-7',
         highlighted ? 'bg-slate-950 text-white ring-slate-900 shadow-float' : 'bg-white text-slate-900 ring-slate-200 shadow-card',
-        comingSoon && 'opacity-75',
         className,
       )}
     >
@@ -23,8 +21,6 @@ export function PlanCard({ plan, current = false, highlighted = false, action, c
         </span>
         {current ? (
           <Badge tone={highlighted ? 'dark' : 'brand'}>Current plan</Badge>
-        ) : comingSoon ? (
-          <Badge tone="amber">Coming soon</Badge>
         ) : growth ? (
           <Badge tone="brand">Your own spokesperson</Badge>
         ) : null}
@@ -55,11 +51,7 @@ export function PlanCard({ plan, current = false, highlighted = false, action, c
           </li>
         ))}
       </ul>
-      {comingSoon ? (
-        <p className={cn('mt-7 pt-1 text-center text-sm font-medium', highlighted ? 'text-slate-400' : 'text-slate-400')}>Coming soon</p>
-      ) : (
-        action && <div className="mt-7 pt-1">{action}</div>
-      )}
+      {action && <div className="mt-7 pt-1">{action}</div>}
     </div>
   );
 }
