@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, Check, Lock, Mail, Sparkles, User, UserRound } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
-import { Link, useNavigate, useSearchParams } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { registerSchema } from '#shared/schemas';
 import { Button } from '../../components/ui/Button.jsx';
 import { Input } from '../../components/ui/Field.jsx';
@@ -14,7 +14,7 @@ import { cn } from '../../utils/cn.js';
 
 const PLAN_OPTIONS = [
   { id: 'STARTER', name: 'Starter', icon: UserRound, text: 'Choose from our stock avatar library.' },
-  { id: 'GROWTH', name: 'Growth', icon: Sparkles, text: 'Create a digital twin of yourself.' },
+  { id: 'GROWTH', name: 'Growth', icon: Sparkles, text: 'Create a digital twin of yourself.', comingSoon: true },
 ];
 
 export default function RegisterPage() {
@@ -22,9 +22,7 @@ export default function RegisterPage() {
   const registerUser = useAuthStore((s) => s.register);
   const navigate = useNavigate();
   const [serverError, setServerError] = useState(null);
-  const [searchParams] = useSearchParams();
-  const requestedPlan = searchParams.get('plan');
-  const initialPlan = PLAN_OPTIONS.some((o) => o.id === requestedPlan) ? requestedPlan : 'STARTER';
+  const initialPlan = 'STARTER';
 
   const {
     register,
@@ -77,18 +75,28 @@ export default function RegisterPage() {
                       type="button"
                       role="radio"
                       aria-checked={active}
-                      onClick={() => field.onChange(option.id)}
+                      disabled={option.comingSoon}
+                      onClick={() => !option.comingSoon && field.onChange(option.id)}
                       className={cn(
                         'relative rounded-xl p-3 text-left ring-1 transition',
-                        active ? 'bg-brand-50/60 ring-2 ring-brand-600' : 'bg-white ring-slate-200 hover:ring-slate-300',
+                        option.comingSoon
+                          ? 'cursor-not-allowed bg-slate-50 ring-slate-200 opacity-70'
+                          : active
+                            ? 'bg-brand-50/60 ring-2 ring-brand-600'
+                            : 'bg-white ring-slate-200 hover:ring-slate-300',
                       )}
                     >
-                      {active && (
+                      {active && !option.comingSoon && (
                         <span className="absolute top-2.5 right-2.5 grid size-4 place-items-center rounded-full bg-brand-600 text-white">
                           <Check className="size-3" strokeWidth={3} />
                         </span>
                       )}
-                      <option.icon className={cn('size-5', active ? 'text-brand-600' : 'text-slate-400')} />
+                      {option.comingSoon && (
+                        <span className="absolute top-2.5 right-2.5 rounded-full bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-800 ring-1 ring-inset ring-amber-200">
+                          Coming soon
+                        </span>
+                      )}
+                      <option.icon className={cn('size-5', active && !option.comingSoon ? 'text-brand-600' : 'text-slate-400')} />
                       <p className="mt-2 text-sm font-semibold text-slate-900">{option.name}</p>
                       <p className="mt-0.5 text-xs leading-snug text-slate-500">{option.text}</p>
                     </button>
