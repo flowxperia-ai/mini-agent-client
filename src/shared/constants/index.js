@@ -115,6 +115,8 @@ export const GESTURE_LABELS = Object.freeze({
   custom: 'Custom motion',
 });
 export const CUSTOM_MOTION_PROMPT_MAX_CHARS = 300;
+/** HeyGen's own limit for the `prompt` field when generating a new avatar look. */
+export const OUTFIT_PROMPT_MAX_CHARS = 1000;
 
 export const SCRIPT_SOURCES = Object.freeze({
   MANUAL: 'MANUAL',

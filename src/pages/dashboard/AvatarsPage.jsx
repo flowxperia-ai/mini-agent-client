@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   CheckCircle2,
   Circle,
@@ -6,22 +6,26 @@ import {
   Download,
   ExternalLink,
   FileVideo,
+  Library,
   Loader2,
   Plus,
   RefreshCw,
+  Search,
   ShieldCheck,
+  Shirt,
   Sparkles,
   Upload,
   UserRound,
   XCircle,
 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router';
+import { OUTFIT_PROMPT_MAX_CHARS } from '#shared/constants';
 import { AvatarCard } from '../../components/AvatarCard.jsx';
 import { PageHeader } from '../../components/PageHeader.jsx';
 import { StatusBadge } from '../../components/StatusBadge.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { Card, CardBody, CardHeader } from '../../components/ui/Card.jsx';
-import { Input, Segmented } from '../../components/ui/Field.jsx';
+import { Input, Segmented, Textarea } from '../../components/ui/Field.jsx';
 import { ProgressBar } from '../../components/ui/ProgressBar.jsx';
 import { EmptyState, ErrorState, InlineAlert, Skeleton } from '../../components/ui/States.jsx';
 import { useApi } from '../../hooks/useApi.js';
@@ -42,14 +46,87 @@ const ACCEPT = 'video/mp4,video/quicktime,video/webm,.mp4,.mov,.webm';
 
 function StockLibrary({ avatars }) {
   const navigate = useNavigate();
+  const [source, setSource] = useState('all');
+  const [gender, setGender] = useState('all');
+  const [style, setStyle] = useState('all');
+  const [query, setQuery] = useState('');
+
+  // Style pills are a stock-library concept (e.g. "Studio") — custom avatars carry internal
+  // labels like "Digital twin" / "Imported from HeyGen" instead, which don't belong here; the
+  // "My avatars" / "Stock" toggle already separates those.
+  const styles = useMemo(
+    () => [...new Set(avatars.filter((a) => a.type === 'STOCK').map((a) => a.style).filter(Boolean))].sort(),
+    [avatars],
+  );
+  const filtered = avatars.filter(
+    (a) =>
+      (source === 'all' || a.type === source) &&
+      (gender === 'all' || a.gender === gender) &&
+      (style === 'all' || a.style === style) &&
+      (!query || a.name.toLowerCase().includes(query.toLowerCase())),
+  );
+
   return (
-    <>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-        {avatars.map((avatar) => (
-          <AvatarCard key={avatar.id} avatar={avatar} onSelect={(a) => navigate(`/dashboard/create?avatar=${a.id}`)} />
-        ))}
+    <div className="space-y-5">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-wrap items-center gap-2">
+          <Segmented
+            value={source}
+            onChange={setSource}
+            options={[
+              { value: 'all', label: 'All' },
+              { value: 'CUSTOM', label: 'My avatars' },
+              { value: 'STOCK', label: 'Stock' },
+            ]}
+          />
+          <Segmented
+            value={gender}
+            onChange={setGender}
+            options={[
+              { value: 'all', label: 'All' },
+              { value: 'female', label: 'Female' },
+              { value: 'male', label: 'Male' },
+            ]}
+          />
+          <div className="flex flex-wrap gap-1.5">
+            {['all', ...styles].map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setStyle(s)}
+                className={cn(
+                  'rounded-full px-3 py-1.5 text-xs font-medium ring-1 transition',
+                  style === s ? 'bg-slate-900 text-white ring-slate-900' : 'bg-white text-slate-600 ring-slate-200 hover:ring-slate-300',
+                )}
+              >
+                {s === 'all' ? 'Any style' : s}
+              </button>
+            ))}
+          </div>
+        </div>
+        <Input icon={Search} placeholder="Search avatars" value={query} onChange={(e) => setQuery(e.target.value)} className="lg:w-60" aria-label="Search avatars" />
       </div>
-    </>
+      {filtered.length ? (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5" role="radiogroup" aria-label="Stock avatars">
+          {filtered.map((avatar) => (
+            <AvatarCard key={avatar.id} avatar={avatar} onSelect={(a) => navigate(`/dashboard/create?avatar=${a.id}`)} />
+          ))}
+        </div>
+      ) : source === 'CUSTOM' && !avatars.some((a) => a.type === 'CUSTOM') ? (
+        <EmptyState
+          icon={Sparkles}
+          title="You don't have your own avatar yet"
+          description="Switch to Growth to upload a video for a digital twin, or import one you already made on HeyGen — it'll still be usable here on Starter afterward."
+          action={
+            <Button to="/dashboard/billing" icon={Sparkles}>
+              Go to Billing
+            </Button>
+          }
+        />
+      ) : (
+        <EmptyState icon={Library} title="No avatars match" description="Try a different filter." />
+      )}
+    </div>
   );
 }
 
@@ -282,13 +359,24 @@ function Step({ state, title, description }) {
   );
 }
 
-function TwinCard({ initial, highlight }) {
+function TwinCard({ initial, highlight, slots, onLookAdded }) {
   const navigate = useNavigate();
   const { copy } = useCopy();
   const [avatar, setAvatar] = useState(initial);
   const [starting, setStarting] = useState(false);
+  const [showLookForm, setShowLookForm] = useState(false);
+  const [lookName, setLookName] = useState('');
+  const [outfit, setOutfit] = useState('');
+  const [generatingLook, setGeneratingLook] = useState(false);
+  const [lookError, setLookError] = useState(null);
+  const noSlot = slots && slots.used >= slots.available;
   const consent = avatar.consent?.status ?? 'NOT_STARTED';
-  const inProgress = !avatar.isReady && !['REJECTED', 'EXPIRED', 'NOT_STARTED'].includes(consent);
+  // Training finishing doesn't mean consent is settled — HeyGen still blocks generation on it, so
+  // keep polling/acting on consent independently of avatar.isReady, not gated behind it. Also keep
+  // polling if the thumbnail hasn't arrived yet — HeyGen can flip training to "ready" slightly
+  // before the preview image itself is available, and we'd otherwise freeze on a blank thumbnail.
+  const consentSettled = ['APPROVED', 'REJECTED', 'EXPIRED', 'NOT_STARTED'].includes(consent);
+  const inProgress = !consentSettled || !avatar.isReady || !avatar.thumbnailUrl;
 
   const { refetch, loading } = useApi(
     async () => {
@@ -297,7 +385,7 @@ function TwinCard({ initial, highlight }) {
       return status;
     },
     [avatar.id],
-    { poll: inProgress ? 5000 : null, enabled: !avatar.isReady },
+    { poll: inProgress ? 5000 : null, enabled: inProgress },
   );
 
   useEffect(() => {
@@ -314,6 +402,26 @@ function TwinCard({ initial, highlight }) {
       toast.fromError(err);
     } finally {
       setStarting(false);
+    }
+  };
+
+  const generateLook = async (e) => {
+    e.preventDefault();
+    setLookError(null);
+    if (lookName.trim().length < 2) return setLookError('Give the new look a name.');
+    if (outfit.trim().length < 3) return setLookError('Describe the outfit in a bit more detail.');
+    setGeneratingLook(true);
+    try {
+      await avatarService.generateLook(avatar.id, { name: lookName.trim(), outfit: outfit.trim() });
+      toast.success('New look is training — it will appear below once ready');
+      setLookName('');
+      setOutfit('');
+      setShowLookForm(false);
+      onLookAdded?.();
+    } catch (err) {
+      setLookError(err.message);
+    } finally {
+      setGeneratingLook(false);
     }
   };
 
@@ -338,7 +446,7 @@ function TwinCard({ initial, highlight }) {
             <Step state="done" title="Footage uploaded" />
             <Step
               state={consentState}
-              title="Spokesperson consent (optional)"
+              title="Spokesperson consent"
               description={
                 consent === 'APPROVED'
                   ? 'Approved — thank you!'
@@ -347,7 +455,7 @@ function TwinCard({ initial, highlight }) {
                     : consent === 'EXPIRED'
                       ? 'The consent link expired. Request a new one if you still want it on record.'
                       : consent === 'NOT_STARTED'
-                        ? 'Not required to generate videos, but you can still record it for your own records.'
+                        ? 'Required by the video provider before this avatar can generate videos.'
                         : 'Waiting for the spokesperson to complete the hosted consent page.'
               }
             />
@@ -356,31 +464,71 @@ function TwinCard({ initial, highlight }) {
           </ol>
 
           <div className="mt-6 flex flex-wrap gap-2">
-            {avatar.isReady ? (
+            {avatar.isReady && (
               <Button icon={Sparkles} onClick={() => navigate('/dashboard/create')}>
                 Create a video
               </Button>
-            ) : avatar.consent?.url ? (
-              <>
-                <Button icon={ExternalLink} href={avatar.consent.url} target="_blank" rel="noopener noreferrer">
-                  Open consent page
-                </Button>
-                <Button variant="secondary" icon={Copy} onClick={() => copy(avatar.consent.url, 'Consent link copied — send it to your spokesperson')}>
-                  Copy link
-                </Button>
-              </>
-            ) : (
-              <Button icon={ShieldCheck} onClick={startConsent} loading={starting}>
-                {consent === 'NOT_STARTED' ? 'Start consent' : 'Request a new consent link'}
-              </Button>
             )}
-            {!avatar.isReady && (
+            {consent !== 'APPROVED' &&
+              (avatar.consent?.url ? (
+                <>
+                  <Button icon={ExternalLink} href={avatar.consent.url} target="_blank" rel="noopener noreferrer">
+                    Open consent page
+                  </Button>
+                  <Button variant="secondary" icon={Copy} onClick={() => copy(avatar.consent.url, 'Consent link copied — send it to your spokesperson')}>
+                    Copy link
+                  </Button>
+                </>
+              ) : (
+                <Button icon={ShieldCheck} onClick={startConsent} loading={starting}>
+                  {consent === 'NOT_STARTED' ? 'Start consent' : 'Request a new consent link'}
+                </Button>
+              ))}
+            {inProgress && (
               <Button variant="ghost" icon={RefreshCw} onClick={() => refetch()} loading={loading}>
                 Refresh status
               </Button>
             )}
           </div>
           {avatar.error && !avatar.isReady && <p className="mt-3 text-xs text-rose-600">{avatar.error}</p>}
+
+          {avatar.isReady && (
+            <div className="mt-5 border-t border-slate-100 pt-4">
+              {showLookForm ? (
+                <form onSubmit={generateLook} className="space-y-3">
+                  <Input label="Look name" placeholder="e.g. In a lab coat" value={lookName} onChange={(e) => setLookName(e.target.value)} maxLength={60} />
+                  <Textarea
+                    label="Outfit"
+                    placeholder="Describe the outfit, setting or style — e.g. a white lab coat, standing in a clinic"
+                    value={outfit}
+                    onChange={(e) => setOutfit(e.target.value)}
+                    maxLength={OUTFIT_PROMPT_MAX_CHARS}
+                    rows={3}
+                    hint={`${outfit.length}/${OUTFIT_PROMPT_MAX_CHARS} characters — describes appearance only, not gestures`}
+                  />
+                  {lookError && <p className="text-sm font-medium text-rose-600">{lookError}</p>}
+                  {noSlot ? (
+                    <InlineAlert tone="warning" icon={ShieldCheck} action={<Button size="sm" to="/dashboard/billing">Buy a slot</Button>}>
+                      You need a custom avatar slot to generate a new look.
+                    </InlineAlert>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Button type="submit" icon={Shirt} loading={generatingLook}>
+                        Generate look
+                      </Button>
+                      <Button type="button" variant="secondary" onClick={() => setShowLookForm(false)}>
+                        Cancel
+                      </Button>
+                    </div>
+                  )}
+                </form>
+              ) : (
+                <Button variant="secondary" icon={Shirt} onClick={() => setShowLookForm(true)}>
+                  Generate a new look
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </Card>
@@ -402,7 +550,7 @@ export default function AvatarsPage() {
         title={growth ? 'Your digital twin' : 'Stock avatar library'}
         description={growth ? 'Create a digital twin of yourself.' : 'Choose from our stock avatar library.'}
         actions={
-          growth && data?.slots ? (
+          data?.slots ? (
             <span className="rounded-full bg-white px-3 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200">
               {data.slots.used} / {data.slots.available} avatar slots used
             </span>
@@ -422,7 +570,7 @@ export default function AvatarsPage() {
       ) : growth ? (
         <div className="space-y-6">
           {data.avatars.map((avatar) => (
-            <TwinCard key={avatar.id} initial={avatar} highlight={avatar.id === highlightId} />
+            <TwinCard key={avatar.id} initial={avatar} highlight={avatar.id === highlightId} slots={data.slots} onLookAdded={() => refetch({ silent: true })} />
           ))}
           {(data.avatars.length === 0 || data.slots.used < data.slots.available) && <AddAvatarCard slots={data.slots} onAdded={() => refetch({ silent: true })} />}
           {data.avatars.length > 0 && data.slots.used >= data.slots.available && (
@@ -435,10 +583,20 @@ export default function AvatarsPage() {
             </p>
           )}
         </div>
-      ) : data.avatars.length ? (
-        <StockLibrary avatars={data.avatars} />
       ) : (
-        <EmptyState icon={UserRound} title="No stock avatars available" description="The avatar library could not be loaded from the provider. Try again shortly." />
+        <div className="space-y-6">
+          <Card>
+            <CardHeader icon={Download} title="Import from HeyGen" description="Already have an avatar on your HeyGen account? Link it in — uses one avatar slot, same as on Growth." />
+            <CardBody>
+              <ImportAvatarList slots={data.slots} onImported={() => refetch({ silent: true })} />
+            </CardBody>
+          </Card>
+          {data.avatars.length ? (
+            <StockLibrary avatars={data.avatars} />
+          ) : (
+            <EmptyState icon={UserRound} title="No stock avatars available" description="The avatar library could not be loaded from the provider. Try again shortly." />
+          )}
+        </div>
       )}
     </div>
   );

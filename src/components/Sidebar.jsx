@@ -1,4 +1,5 @@
 import {
+  Code2,
   Coins,
   CreditCard,
   Film,
@@ -20,6 +21,7 @@ import { Button } from './ui/Button.jsx';
 const NAV = [
   { to: '/dashboard', label: 'Overview', icon: LayoutDashboard, end: true },
   { to: '/dashboard/videos', label: 'Videos', icon: Film },
+  { to: '/dashboard/widgets', label: 'Widgets', icon: Code2 },
   { to: '/dashboard/avatars', label: 'Avatars', icon: UserRound },
   { to: '/dashboard/credits', label: 'Credits', icon: Coins },
   { to: '/dashboard/billing', label: 'Billing', icon: CreditCard },

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Code2, Eye, Palette, Save, Settings2, Timer, Trash2 } from 'lucide-react';
+import { Code2, Eye, Film, Palette, Save, Settings2, Timer, Trash2 } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router';
 import { WIDGET_OFFSET, WIDGET_WIDTH } from '#shared/constants';
@@ -12,7 +12,7 @@ import { Button } from '../../components/ui/Button.jsx';
 import { Card, CardBody, CardHeader } from '../../components/ui/Card.jsx';
 import { Input, Segmented, Select, Switch } from '../../components/ui/Field.jsx';
 import { Modal } from '../../components/ui/Modal.jsx';
-import { ErrorState, LoadingState } from '../../components/ui/States.jsx';
+import { EmptyState, ErrorState, LoadingState } from '../../components/ui/States.jsx';
 import { useApi } from '../../hooks/useApi.js';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle.js';
 import { videoService, widgetService } from '../../services/index.js';
@@ -23,7 +23,7 @@ const SWATCHES = ['#6d5dfc', '#2563eb', '#0ea5e9', '#10b981', '#f97316', '#e11d4
 
 function toForm(widget) {
   return {
-    videoId: widget.videoId,
+    videoId: widget.videoId ?? '',
     name: widget.name,
     position: widget.position,
     delay: widget.delay,
@@ -60,7 +60,7 @@ function Editor({ widget, onSaved }) {
   const values = watch();
 
   const { data: completed } = useApi(() => videoService.list({ status: 'completed', limit: 100 }), []);
-  const { data: videoData } = useApi(() => videoService.get(values.videoId), [values.videoId]);
+  const { data: videoData } = useApi(() => videoService.get(values.videoId), [values.videoId], { enabled: Boolean(values.videoId) });
   const video = videoData?.video;
 
   const previewConfig = useMemo(() => (video ? buildPreviewConfig({ widget: values, video }) : null), [values, video]);
@@ -82,7 +82,7 @@ function Editor({ widget, onSaved }) {
     try {
       await widgetService.remove(widget.id);
       toast.success('Widget deleted');
-      navigate(`/dashboard/videos/${widget.videoId}`);
+      navigate(widget.videoId ? `/dashboard/videos/${widget.videoId}` : '/dashboard/widgets');
     } catch (err) {
       toast.fromError(err);
       setDeleting(false);
@@ -97,8 +97,18 @@ function Editor({ widget, onSaved }) {
             <CardHeader icon={Settings2} title="General" />
             <CardBody className="space-y-4">
               <Input label="Widget name" error={errors.name?.message} {...register('name')} />
-              <Select label="Video" error={errors.videoId?.message} {...register('videoId')}>
-                {(completed?.items ?? [{ id: widget.videoId, title: widget.video?.title ?? 'Current video' }]).map((v) => (
+              <Select
+                label="Video"
+                hint={
+                  values.videoId
+                    ? "Whichever video you pick here becomes the one shown on the customer's website — this is how you make a different video primary."
+                    : 'Pick a completed video to start showing this widget on your website.'
+                }
+                error={errors.videoId?.message}
+                {...register('videoId')}
+              >
+                <option value="">— No video selected —</option>
+                {(completed?.items ?? (widget.videoId ? [{ id: widget.videoId, title: widget.video?.title ?? 'Current video' }] : [])).map((v) => (
                   <option key={v.id} value={v.id}>
                     {v.title}
                   </option>
@@ -251,7 +261,15 @@ function Editor({ widget, onSaved }) {
         <div className="space-y-6 xl:sticky xl:top-6 xl:self-start">
           <Card>
             <CardHeader icon={Eye} title="Live preview" description="Exactly what visitors see — rendered by the real widget script." />
-            <CardBody>{previewConfig ? <WidgetPreview config={previewConfig} height={520} /> : <LoadingState compact />}</CardBody>
+            <CardBody>
+              {previewConfig ? (
+                <WidgetPreview config={previewConfig} height={520} />
+              ) : values.videoId ? (
+                <LoadingState compact />
+              ) : (
+                <EmptyState icon={Film} title="No video selected yet" description="Pick a completed video above to see a live preview and start showing this widget." />
+              )}
+            </CardBody>
           </Card>
           <Card>
             <CardHeader icon={Code2} title="Embed code" description={isDirty ? 'Save your changes — the snippet itself never changes.' : 'Settings update live; you only paste this once.'} />
@@ -311,7 +329,7 @@ export default function WidgetEditorPage() {
   return (
     <div className="animate-rise">
       <PageHeader
-        back={{ to: `/dashboard/videos/${widget.videoId}`, label: 'Back to video' }}
+        back={widget.videoId ? { to: `/dashboard/videos/${widget.videoId}`, label: 'Back to video' } : { to: '/dashboard/widgets', label: 'Back to widgets' }}
         eyebrow="Widget"
         title={widget.name}
         description={`Public id ${widget.publicWidgetId}`}

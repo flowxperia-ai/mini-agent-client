@@ -8,7 +8,7 @@ import {
   WIDGET_THEMES,
   WIDGET_WIDTH,
 } from '../constants/index.js';
-import { httpUrl, objectId, optional } from './common.js';
+import { httpUrl, nullish, objectId, optional } from './common.js';
 
 export const hexColor = z
   .string()
@@ -39,14 +39,14 @@ export const widgetFieldsShape = {
 
 const partialFields = z.object(widgetFieldsShape).partial();
 
-/** POST /api/widgets — everything except the video is optional (model defaults apply). */
-export const createWidgetSchema = partialFields.extend({ videoId: objectId });
+/** POST /api/widgets — a video is optional; every account already gets one widget at signup. */
+export const createWidgetSchema = partialFields.extend({ videoId: nullish(objectId) });
 
 /** PATCH /api/widgets/:id */
-export const updateWidgetSchema = partialFields.extend({ videoId: objectId.optional() });
+export const updateWidgetSchema = partialFields.extend({ videoId: nullish(objectId) });
 
-/** Complete widget settings form used by the dashboard editor. */
-export const widgetFormSchema = z.object({ videoId: objectId, ...widgetFieldsShape }).superRefine((value, ctx) => {
+/** Complete widget settings form used by the dashboard editor — no video selected yet is valid. */
+export const widgetFormSchema = z.object({ videoId: nullish(objectId), ...widgetFieldsShape }).superRefine((value, ctx) => {
   if (value.primaryCtaText && !value.primaryCtaUrl) {
     ctx.addIssue({ code: 'custom', path: ['primaryCtaUrl'], message: 'Add a URL for your call to action.' });
   }

@@ -45,14 +45,15 @@ export default function VideoDetailPage() {
   if (loading || !video) return <LoadingState />;
 
   const widget = widgetData?.widget;
-  const createWidget = async () => {
+  const makePrimary = async () => {
     setCreating(true);
     try {
-      const { widget: created } = await widgetService.create({ videoId: video.id });
-      toast.success('Widget created');
-      navigate(`/dashboard/widgets/${created.id}`);
+      await videoService.makePrimary(video.id);
+      toast.success('This video is now live on your site');
+      refetch({ silent: true });
     } catch (err) {
       toast.fromError(err);
+    } finally {
       setCreating(false);
     }
   };
@@ -146,8 +147,8 @@ export default function VideoDetailPage() {
                 {widget ? (
                   <EmbedCode code={widget.embedCode} />
                 ) : (
-                  <Button icon={Wand2} onClick={createWidget} loading={creating}>
-                    Create embeddable widget
+                  <Button icon={Wand2} onClick={makePrimary} loading={creating}>
+                    Make primary — show on my site
                   </Button>
                 )}
                 <WidgetPreview config={buildPreviewConfig({ widget: widget ?? { primaryCtaText: video.ctaText, primaryCtaUrl: video.ctaUrl }, video })} height={500} />

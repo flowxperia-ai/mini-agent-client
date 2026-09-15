@@ -35,7 +35,7 @@ import { Input, Segmented, Textarea } from '../../components/ui/Field.jsx';
 import { EmptyState, ErrorState, InlineAlert, Skeleton } from '../../components/ui/States.jsx';
 import { useApi } from '../../hooks/useApi.js';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle.js';
-import { avatarService, videoService, widgetService } from '../../services/index.js';
+import { avatarService, videoService } from '../../services/index.js';
 import { useAuthStore } from '../../store/authStore.js';
 import { useAppConfig } from '../../store/configStore.js';
 import { toast } from '../../store/toastStore.js';
@@ -213,12 +213,11 @@ function GenerationView({ videoId, onRestart }) {
     if (status && !['QUEUED', 'PROCESSING'].includes(status)) refreshUser();
   }, [status, refreshUser]);
 
-  const createWidget = async () => {
+  const makePrimary = async () => {
     setCreating(true);
     try {
-      const existing = video.widgets?.[0];
-      const { widget } = existing ? { widget: existing } : await widgetService.create({ videoId: video.id });
-      toast.success(existing ? 'Opening your widget' : 'Widget created — customise it and copy the embed code');
+      const { widget } = await videoService.makePrimary(video.id);
+      toast.success('This video is now live on your site');
       navigate(`/dashboard/widgets/${widget.id}`);
     } catch (err) {
       toast.fromError(err);
@@ -255,8 +254,8 @@ function GenerationView({ videoId, onRestart }) {
                 {video.creditsReserved > video.creditsCharged && ` — ${video.creditsReserved - video.creditsCharged} unused credits were returned`}.
               </p>
               <div className="flex flex-wrap gap-2">
-                <Button icon={Wand2} onClick={createWidget} loading={creating}>
-                  {video.widgets?.length ? 'Open widget' : 'Create embeddable widget'}
+                <Button icon={Wand2} onClick={makePrimary} loading={creating}>
+                  {video.isPrimary ? 'Already live — open widget' : 'Make primary (show on my site)'}
                 </Button>
                 <Button variant="secondary" to={`/dashboard/videos/${video.id}`}>
                   View details

@@ -133,25 +133,23 @@ export default function BillingPage() {
           ))}
         </div>
 
-        {user.plan === 'GROWTH' && (
-          <Card className="mt-5 flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex gap-4">
-              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600">
-                <UserPlus className="size-5" />
-              </span>
-              <div>
-                <p className="font-semibold text-slate-900">
-                  {avatarSlot.name} · {formatMoney(avatarSlot.priceCents, avatarSlot.currency)}
-                </p>
-                <p className="text-sm text-slate-500">{avatarSlot.description}</p>
-                <p className="mt-1 text-xs text-slate-400">You currently have {user.avatarSlots} slot{user.avatarSlots === 1 ? '' : 's'}.</p>
-              </div>
+        <Card className="mt-5 flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex gap-4">
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600">
+              <UserPlus className="size-5" />
+            </span>
+            <div>
+              <p className="font-semibold text-slate-900">
+                {avatarSlot.name} · {formatMoney(avatarSlot.priceCents, avatarSlot.currency)}
+              </p>
+              <p className="text-sm text-slate-500">{avatarSlot.description}</p>
+              <p className="mt-1 text-xs text-slate-400">You currently have {user.avatarSlots} slot{user.avatarSlots === 1 ? '' : 's'}.</p>
             </div>
-            <Button variant="secondary" loading={buying === avatarSlot.id} disabled={Boolean(buying)} onClick={() => buy(avatarSlot.id)}>
-              Buy avatar slot
-            </Button>
-          </Card>
-        )}
+          </div>
+          <Button variant="secondary" loading={buying === avatarSlot.id} disabled={Boolean(buying)} onClick={() => buy(avatarSlot.id)}>
+            Buy avatar slot
+          </Button>
+        </Card>
       </section>
 
       <Card className="mt-10">

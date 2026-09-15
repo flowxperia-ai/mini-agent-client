@@ -24,6 +24,7 @@ const CreditsPage = lazy(() => import('./pages/dashboard/CreditsPage.jsx'));
 const BillingPage = lazy(() => import('./pages/dashboard/BillingPage.jsx'));
 const MockCheckoutPage = lazy(() => import('./pages/dashboard/MockCheckoutPage.jsx'));
 const SettingsPage = lazy(() => import('./pages/dashboard/SettingsPage.jsx'));
+const WidgetsPage = lazy(() => import('./pages/dashboard/WidgetsPage.jsx'));
 const WidgetEditorPage = lazy(() => import('./pages/dashboard/WidgetEditorPage.jsx'));
 const AdminPage = lazy(() => import('./pages/admin/AdminPage.jsx'));
 const MockConsentPage = lazy(() => import('./pages/mock/MockConsentPage.jsx'));
@@ -76,6 +77,7 @@ export default function App() {
                 <Route path="billing" element={<BillingPage />} />
                 <Route path="billing/mock-checkout" element={<MockCheckoutPage />} />
                 <Route path="settings" element={<SettingsPage />} />
+                <Route path="widgets" element={<WidgetsPage />} />
                 <Route path="widgets/:id" element={<WidgetEditorPage />} />
               </Route>
               <Route element={<AdminRoute />}>

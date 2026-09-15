@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Film, Plus } from 'lucide-react';
-import { useNavigate } from 'react-router';
 import { DeleteVideoModal } from '../../components/DeleteVideoModal.jsx';
 import { PageHeader } from '../../components/PageHeader.jsx';
 import { VideoCard } from '../../components/VideoCard.jsx';
@@ -23,7 +22,6 @@ const PAGE_SIZE = 12;
 
 export default function VideosPage() {
   useDocumentTitle('Videos');
-  const navigate = useNavigate();
   const { copy } = useCopy();
   const [filter, setFilter] = useState('all');
   const [page, setPage] = useState(1);
@@ -33,17 +31,30 @@ export default function VideosPage() {
     poll: (d) => (d?.items?.some((v) => v.status === 'QUEUED' || v.status === 'PROCESSING') ? 4000 : null),
   });
 
+  // The embed code belongs to the account's one stable widget, not to any specific video — so
+  // this never creates a second, separate widget. It only creates one the very first time,
+  // when the account truly has none yet (which also makes this video primary, reasonably).
   const handleEmbed = async (video) => {
     try {
-      const existing = video.widgets[0];
-      if (existing) {
-        const { widget } = await widgetService.get(existing.id);
-        await copy(widget.embedCode, 'Embed code copied');
+      const { items } = await widgetService.list();
+      if (items.length) {
+        const primary = items[items.length - 1]; // list is newest-first; the oldest is the primary one
+        await copy(primary.embedCode, 'Embed code copied');
       } else {
-        const { widget } = await widgetService.create({ videoId: video.id });
-        toast.success('Widget created — customise it, then copy the embed code');
-        navigate(`/dashboard/widgets/${widget.id}`);
+        const { widget } = await videoService.makePrimary(video.id);
+        toast.success('This video is now live on your site');
+        await copy(widget.embedCode, 'Embed code copied');
       }
+    } catch (err) {
+      toast.fromError(err);
+    }
+  };
+
+  const handleMakePrimary = async (video) => {
+    try {
+      await videoService.makePrimary(video.id);
+      toast.success('This video is now live on your site');
+      refetch({ silent: true });
     } catch (err) {
       toast.fromError(err);
     }
@@ -116,7 +127,7 @@ export default function VideosPage() {
         <>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {data.items.map((video) => (
-              <VideoCard key={video.id} video={video} onCopyEmbed={handleEmbed} onDelete={setToDelete} />
+              <VideoCard key={video.id} video={video} onCopyEmbed={handleEmbed} onDelete={setToDelete} onMakePrimary={handleMakePrimary} />
             ))}
           </div>
           {data.pagination.pages > 1 && (

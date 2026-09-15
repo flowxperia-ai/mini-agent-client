@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CREDIT_TX_TYPE_LIST, PLAN_LIST, VIDEO_STATUS_LIST } from '../constants/index.js';
+import { CREDIT_TX_TYPE_LIST, OUTFIT_PROMPT_MAX_CHARS, PLAN_LIST, VIDEO_STATUS_LIST } from '../constants/index.js';
 import { nameField, passwordField } from './auth.js';
 import { paginationQuery } from './common.js';
 
@@ -25,6 +25,16 @@ export const updateMeSchema = z
 /** POST /api/avatars/custom (multipart; file handled separately) */
 export const createCustomAvatarSchema = z.object({
   name: z.string().trim().min(2, 'Name must be at least 2 characters').max(60, 'Name must be 60 characters or fewer'),
+});
+
+/** POST /api/avatars/:id/looks — generate a new look (e.g. a different outfit) for an existing digital twin. */
+export const generateAvatarLookSchema = z.object({
+  name: z.string().trim().min(2, 'Name must be at least 2 characters').max(60, 'Name must be 60 characters or fewer'),
+  outfit: z
+    .string()
+    .trim()
+    .min(3, 'Describe the outfit in a bit more detail')
+    .max(OUTFIT_PROMPT_MAX_CHARS, `Keep it under ${OUTFIT_PROMPT_MAX_CHARS} characters`),
 });
 
 /** POST /api/billing/checkout */

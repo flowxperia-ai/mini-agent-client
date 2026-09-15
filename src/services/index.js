@@ -36,6 +36,7 @@ export const avatarService = {
       onUploadProgress,
     });
   },
+  generateLook: (id, { name, outfit }) => api.post(`/avatars/${id}/looks`, { name, outfit }),
 };
 
 export const videoService = {
@@ -43,6 +44,7 @@ export const videoService = {
   get: (id) => api.get(`/videos/${id}`),
   generate: (body, idempotencyKey) => api.post('/videos/generate', body, { headers: { 'Idempotency-Key': idempotencyKey } }),
   remove: (id) => api.delete(`/videos/${id}`),
+  makePrimary: (id) => api.post(`/videos/${id}/primary`),
 };
 
 export const widgetService = {

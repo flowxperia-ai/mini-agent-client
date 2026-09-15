@@ -7,6 +7,12 @@ export const blankToUndefined = (value) =>
 /** Wrap a schema so blank form values become `undefined`. */
 export const optional = (schema) => z.preprocess(blankToUndefined, schema.optional());
 
+/** Treat a blank string (native `<select>` "— none —" option) as `null`, not "not provided". */
+export const blankToNull = (value) => (typeof value === 'string' && value.trim() === '' ? null : value);
+
+/** Wrap a schema so blank form values become `null` instead of failing validation. */
+export const nullish = (schema) => z.preprocess(blankToNull, schema.nullish());
+
 export function isHttpUrl(value) {
   try {
     const url = new URL(value);

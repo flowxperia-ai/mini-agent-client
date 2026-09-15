@@ -1,4 +1,4 @@
-import { Code2, ExternalLink, Eye, MousePointerClick, Settings2, Trash2, UserRound } from 'lucide-react';
+import { Code2, ExternalLink, Eye, MousePointerClick, Settings2, Sparkles, Trash2, UserRound } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { cn } from '../utils/cn.js';
 import { formatDuration, formatRelative } from '../utils/format.js';
@@ -35,16 +35,22 @@ export function VideoThumb({ video, className }) {
 /**
  * Library tile with status, embed state and actions (preview, copy embed, edit widget, open, delete).
  */
-export function VideoCard({ video, onCopyEmbed, onDelete }) {
+export function VideoCard({ video, onCopyEmbed, onDelete, onMakePrimary }) {
   const navigate = useNavigate();
   const widget = video.widgets?.[0];
+  // isPrimary reflects the account's ONE stable embed link — whether THIS video is what it
+  // currently shows. A video can still have its own separate leftover widget (from before this
+  // feature existed) without being primary, so this is deliberately not just "widget truthy".
+  const isPrimary = video.isPrimary;
   const active = video.status === 'QUEUED' || video.status === 'PROCESSING';
   const open = () => navigate(`/dashboard/videos/${video.id}`);
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-slate-200/80 transition hover:-translate-y-0.5 hover:shadow-float">
+    // No overflow-hidden here — it would clip the "..." menu's dropdown, which needs to render
+    // outside the card's bounds. VideoThumb rounds its own top corners instead.
+    <article className="group flex flex-col rounded-2xl bg-white shadow-card ring-1 ring-slate-200/80 transition hover:-translate-y-0.5 hover:shadow-float">
       <button type="button" onClick={open} className="relative block text-left" aria-label={`Open ${video.title}`}>
-        <VideoThumb video={video} />
+        <VideoThumb video={video} className="rounded-t-2xl" />
         <div className="absolute inset-x-0 top-0 flex items-start justify-between p-2.5">
           <StatusBadge status={video.status} />
           {video.duration || video.estimatedDuration ? (
@@ -72,7 +78,8 @@ export function VideoCard({ video, onCopyEmbed, onDelete }) {
           <Menu
             items={[
               { label: 'Preview', icon: Eye, onClick: open },
-              video.status === 'COMPLETED' && { label: widget ? 'Copy embed code' : 'Create widget', icon: Code2, onClick: () => onCopyEmbed?.(video) },
+              video.status === 'COMPLETED' && !isPrimary && { label: 'Make primary (show on my site)', icon: Sparkles, onClick: () => onMakePrimary?.(video) },
+              video.status === 'COMPLETED' && { label: 'Copy embed code', icon: Code2, onClick: () => onCopyEmbed?.(video) },
               widget && { label: 'Edit widget settings', icon: Settings2, onClick: () => navigate(`/dashboard/widgets/${widget.id}`) },
               video.videoUrl && { label: 'Open video file', icon: ExternalLink, onClick: () => window.open(video.videoUrl, '_blank', 'noopener') },
               { divider: true, key: 'd' },
@@ -86,12 +93,12 @@ export function VideoCard({ video, onCopyEmbed, onDelete }) {
               <MousePointerClick className="size-3" /> {video.ctaText}
             </Badge>
           )}
-          {widget ? (
-            <Badge tone={widget.enabled ? 'green' : 'gray'} dot>
-              {widget.enabled ? 'Embedded' : 'Widget off'}
+          {isPrimary ? (
+            <Badge tone={widget?.enabled ? 'green' : 'gray'} dot>
+              {widget?.enabled ? 'Primary — live on site' : 'Primary (widget off)'}
             </Badge>
           ) : video.status === 'COMPLETED' ? (
-            <Badge tone="amber">Not embedded</Badge>
+            <Badge tone="amber">Not primary</Badge>
           ) : null}
         </div>
       </div>
