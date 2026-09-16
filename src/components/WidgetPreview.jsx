@@ -32,6 +32,7 @@ export function buildPreviewConfig({ widget = {}, video, avatar }) {
       duration: video?.duration ?? video?.estimatedDuration ?? null,
       captions: video?.captions ?? [],
       transparent: Boolean(video?.transparentBackground),
+      chromaKeyColor: video?.chromaKeyColor ?? null,
     },
   };
 }

@@ -134,7 +134,7 @@ function StockLibrary({ avatars }) {
 /* Growth: create a digital twin, or import one already on HeyGen      */
 /* ------------------------------------------------------------------ */
 
-function NoSlotNotice({ slots, itemLabel }) {
+export function NoSlotNotice({ slots, itemLabel }) {
   return (
     <InlineAlert tone="warning" icon={ShieldCheck} title="You need a custom avatar slot" action={<Button size="sm" to="/dashboard/billing">Buy a slot</Button>}>
       Each {itemLabel} uses one custom avatar slot, billed separately from generation credits. You have used {slots.used} of {slots.available}.
@@ -550,11 +550,16 @@ export default function AvatarsPage() {
         title={growth ? 'Your digital twin' : 'Stock avatar library'}
         description={growth ? 'Create a digital twin of yourself.' : 'Choose from our stock avatar library.'}
         actions={
-          data?.slots ? (
-            <span className="rounded-full bg-white px-3 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200">
-              {data.slots.used} / {data.slots.available} avatar slots used
-            </span>
-          ) : null
+          <>
+            {data?.slots && (
+              <span className="rounded-full bg-white px-3 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200">
+                {data.slots.used} / {data.slots.available} avatar slots used
+              </span>
+            )}
+            <Button to="/dashboard/avatars/create-ai" icon={Sparkles}>
+              Create my avatar
+            </Button>
+          </>
         }
       />
 

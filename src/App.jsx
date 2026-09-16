@@ -20,6 +20,7 @@ const CreateVideoPage = lazy(() => import('./pages/dashboard/CreateVideoPage.jsx
 const VideosPage = lazy(() => import('./pages/dashboard/VideosPage.jsx'));
 const VideoDetailPage = lazy(() => import('./pages/dashboard/VideoDetailPage.jsx'));
 const AvatarsPage = lazy(() => import('./pages/dashboard/AvatarsPage.jsx'));
+const CreateAiAvatarPage = lazy(() => import('./pages/dashboard/CreateAiAvatarPage.jsx'));
 const CreditsPage = lazy(() => import('./pages/dashboard/CreditsPage.jsx'));
 const BillingPage = lazy(() => import('./pages/dashboard/BillingPage.jsx'));
 const MockCheckoutPage = lazy(() => import('./pages/dashboard/MockCheckoutPage.jsx'));
@@ -73,6 +74,7 @@ export default function App() {
                 <Route path="videos" element={<VideosPage />} />
                 <Route path="videos/:id" element={<VideoDetailPage />} />
                 <Route path="avatars" element={<AvatarsPage />} />
+                <Route path="avatars/create-ai" element={<CreateAiAvatarPage />} />
                 <Route path="credits" element={<CreditsPage />} />
                 <Route path="billing" element={<BillingPage />} />
                 <Route path="billing/mock-checkout" element={<MockCheckoutPage />} />

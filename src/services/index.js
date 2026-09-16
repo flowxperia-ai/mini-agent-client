@@ -37,6 +37,16 @@ export const avatarService = {
     });
   },
   generateLook: (id, { name, outfit }) => api.post(`/avatars/${id}/looks`, { name, outfit }),
+  createPhoto: ({ name, file }, onUploadProgress) => {
+    const form = new FormData();
+    form.append('name', name);
+    form.append('photo', file);
+    return api.post('/avatars/photo', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 2 * 60_000,
+      onUploadProgress,
+    });
+  },
 };
 
 export const videoService = {

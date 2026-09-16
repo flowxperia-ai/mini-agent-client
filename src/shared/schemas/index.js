@@ -27,6 +27,9 @@ export const createCustomAvatarSchema = z.object({
   name: z.string().trim().min(2, 'Name must be at least 2 characters').max(60, 'Name must be 60 characters or fewer'),
 });
 
+/** POST /api/avatars/photo (multipart; file handled separately) — same shape as the digital-twin form. */
+export const createPhotoAvatarSchema = createCustomAvatarSchema;
+
 /** POST /api/avatars/:id/looks — generate a new look (e.g. a different outfit) for an existing digital twin. */
 export const generateAvatarLookSchema = z.object({
   name: z.string().trim().min(2, 'Name must be at least 2 characters').max(60, 'Name must be 60 characters or fewer'),
