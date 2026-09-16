@@ -88,6 +88,11 @@ export const adminService = {
   payments: (params) => api.get('/admin/payments', { params }),
   avatars: (params) => api.get('/admin/avatars', { params }),
   syncStock: () => api.post('/admin/avatars/sync-stock'),
+  suspendUser: (id, body) => api.post(`/admin/users/${id}/suspend`, body),
+  unsuspendUser: (id) => api.post(`/admin/users/${id}/unsuspend`),
+  forceLogoutUser: (id) => api.post(`/admin/users/${id}/force-logout`),
+  changeUserPlan: (id, body) => api.post(`/admin/users/${id}/plan`, body),
+  changeAvatarSlots: (id, body) => api.post(`/admin/users/${id}/avatar-slots`, body),
 };
 
 /** Development-only endpoints standing in for vendor-hosted pages (mock mode). */

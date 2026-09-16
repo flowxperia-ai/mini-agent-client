@@ -68,3 +68,18 @@ export const adminListQuery = paginationQuery.extend({
   q: z.string().trim().max(100).optional(),
   status: z.enum([...VIDEO_STATUS_LIST, 'all']).optional(),
 });
+
+/** POST /api/admin/users/:id/suspend */
+export const suspendUserSchema = z.object({
+  reason: z.string().trim().max(300).optional(),
+});
+
+/** POST /api/admin/users/:id/plan */
+export const changeUserPlanSchema = z.object({
+  plan: z.enum(PLAN_LIST),
+});
+
+/** POST /api/admin/users/:id/avatar-slots */
+export const changeAvatarSlotsSchema = z.object({
+  avatarSlots: z.coerce.number().int().min(0).max(1000),
+});

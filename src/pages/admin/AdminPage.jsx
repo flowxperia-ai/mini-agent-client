@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Activity, AlertTriangle, CreditCard, Film, RefreshCw, Search, ShieldCheck, Users, Webhook, XCircle } from 'lucide-react';
+import { Activity, AlertTriangle, CreditCard, Film, LogOut, RefreshCw, Search, ShieldCheck, ShieldOff, UserCog, Users, Webhook, XCircle } from 'lucide-react';
 import { PageHeader } from '../../components/PageHeader.jsx';
 import { StatusBadge } from '../../components/StatusBadge.jsx';
 import { Badge } from '../../components/ui/Badge.jsx';
@@ -123,12 +123,124 @@ function LedgerModal({ user, onClose }) {
   );
 }
 
+function ManageUserModal({ user, onClose, onDone }) {
+  const [plan, setPlan] = useState(user?.plan ?? 'STARTER');
+  const [avatarSlots, setAvatarSlots] = useState(user?.avatarSlots ?? 0);
+  const [suspendReason, setSuspendReason] = useState('');
+  const [busy, setBusy] = useState(null);
+  const [error, setError] = useState(null);
+
+  const run = async (key, fn, successMessage) => {
+    setBusy(key);
+    setError(null);
+    try {
+      await fn();
+      toast.success(successMessage);
+      onDone();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  if (!user) return null;
+
+  return (
+    <Modal open={Boolean(user)} onClose={onClose} title={`Manage — ${user.email}`} size="md">
+      <div className="space-y-4">
+        <div className="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-100">
+          <p className="text-sm font-semibold text-slate-900">Account status</p>
+          {user.suspended ? (
+            <>
+              <p className="mt-1 text-sm text-rose-600">Suspended{user.suspendedReason ? ` — ${user.suspendedReason}` : ''}</p>
+              <Button
+                size="sm"
+                variant="secondary"
+                icon={ShieldCheck}
+                className="mt-3"
+                loading={busy === 'unsuspend'}
+                onClick={() => run('unsuspend', () => adminService.unsuspendUser(user.id), 'User unsuspended')}
+              >
+                Unsuspend
+              </Button>
+            </>
+          ) : (
+            <>
+              <p className="mt-1 text-xs text-slate-500">Blocks login and every active session immediately.</p>
+              <Textarea rows={2} placeholder="Reason (optional, shown to the user)" value={suspendReason} onChange={(e) => setSuspendReason(e.target.value)} className="mt-2" />
+              <Button
+                size="sm"
+                variant="danger"
+                icon={ShieldOff}
+                className="mt-3"
+                loading={busy === 'suspend'}
+                onClick={() => run('suspend', () => adminService.suspendUser(user.id, { reason: suspendReason.trim() || undefined }), 'User suspended')}
+              >
+                Suspend account
+              </Button>
+            </>
+          )}
+        </div>
+
+        <div className="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-100">
+          <p className="text-sm font-semibold text-slate-900">Sessions</p>
+          <p className="mt-1 text-xs text-slate-500">Sign this user out of every device right now, without suspending them.</p>
+          <Button
+            size="sm"
+            variant="secondary"
+            icon={LogOut}
+            className="mt-3"
+            loading={busy === 'logout'}
+            onClick={() => run('logout', () => adminService.forceLogoutUser(user.id), 'User signed out everywhere')}
+          >
+            Force logout
+          </Button>
+        </div>
+
+        <div className="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-100">
+          <p className="text-sm font-semibold text-slate-900">Plan</p>
+          <div className="mt-2 flex items-end gap-2">
+            <Select value={plan} onChange={(e) => setPlan(e.target.value)} options={[{ value: 'STARTER', label: 'Starter' }, { value: 'GROWTH', label: 'Growth' }]} className="flex-1" />
+            <Button
+              size="sm"
+              loading={busy === 'plan'}
+              disabled={plan === user.plan}
+              onClick={() => run('plan', () => adminService.changeUserPlan(user.id, { plan }), 'Plan updated')}
+            >
+              Save
+            </Button>
+          </div>
+        </div>
+
+        <div className="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-100">
+          <p className="text-sm font-semibold text-slate-900">Avatar slots</p>
+          <div className="mt-2 flex items-end gap-2">
+            <Input type="number" min={0} value={avatarSlots} onChange={(e) => setAvatarSlots(e.target.value)} className="w-28" />
+            <Button
+              size="sm"
+              loading={busy === 'slots'}
+              disabled={Number(avatarSlots) === user.avatarSlots || avatarSlots === ''}
+              onClick={() => run('slots', () => adminService.changeAvatarSlots(user.id, { avatarSlots: Number(avatarSlots) }), 'Avatar slots updated')}
+            >
+              Save
+            </Button>
+          </div>
+        </div>
+
+        {error && <p className="text-sm font-medium text-rose-600">{error}</p>}
+      </div>
+    </Modal>
+  );
+}
+
 function UsersTab() {
   const [q, setQ] = useState('');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [adjusting, setAdjusting] = useState(null);
   const [ledger, setLedger] = useState(null);
+  const [managing, setManaging] = useState(null);
   const { data, loading, error, refetch } = useApi(() => adminService.users({ page, limit: 20, ...(search ? { q: search } : {}) }), [page, search]);
   if (error) return <ErrorState error={error} onRetry={refetch} />;
   return (
@@ -152,7 +264,17 @@ function UsersTab() {
         rows={data?.items}
         columns={[
           { key: 'email', header: 'User', render: (u) => (<div><p className="font-medium text-slate-900">{u.name}</p><p className="text-xs text-slate-500">{u.email}</p></div>) },
-          { key: 'plan', header: 'Plan', render: (u) => (<span className="flex gap-1"><Badge tone={u.plan === 'GROWTH' ? 'brand' : 'gray'}>{u.plan}</Badge>{u.role === 'admin' && <Badge tone="dark">admin</Badge>}</span>) },
+          {
+            key: 'plan',
+            header: 'Plan',
+            render: (u) => (
+              <span className="flex flex-wrap gap-1">
+                <Badge tone={u.plan === 'GROWTH' ? 'brand' : 'gray'}>{u.plan}</Badge>
+                {u.role === 'admin' && <Badge tone="dark">admin</Badge>}
+                {u.suspended && <Badge tone="red">suspended</Badge>}
+              </span>
+            ),
+          },
           { key: 'credits', header: 'Credits', className: 'tabular-nums font-semibold', render: (u) => formatNumber(u.credits) },
           { key: 'videos', header: 'Videos', className: 'tabular-nums' },
           { key: 'avatarSlots', header: 'Slots', className: 'tabular-nums' },
@@ -165,6 +287,16 @@ function UsersTab() {
               <div className="flex justify-end gap-1">
                 <Button size="xs" variant="ghost" onClick={() => setLedger(u)}>Ledger</Button>
                 <Button size="xs" variant="subtle" onClick={() => setAdjusting(u)}>Adjust credits</Button>
+                <Button
+                  size="xs"
+                  variant="secondary"
+                  icon={UserCog}
+                  disabled={u.role === 'admin'}
+                  title={u.role === 'admin' ? "Another admin's account can't be managed here" : undefined}
+                  onClick={() => setManaging(u)}
+                >
+                  Manage
+                </Button>
               </div>
             ),
           },
@@ -173,6 +305,14 @@ function UsersTab() {
       <Pagination pagination={data?.pagination} onPage={setPage} />
       <AdjustCreditsModal user={adjusting} onClose={() => setAdjusting(null)} onDone={() => refetch({ silent: true })} />
       {ledger && <LedgerModal user={ledger} onClose={() => setLedger(null)} />}
+      <ManageUserModal
+        user={managing}
+        onClose={() => setManaging(null)}
+        onDone={() => {
+          refetch({ silent: true });
+          setManaging(null);
+        }}
+      />
     </Card>
   );
 }
