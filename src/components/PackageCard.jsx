@@ -9,7 +9,7 @@ export function PackageCard({ pkg, action, perMinute, className }) {
   return (
     <div
       className={cn(
-        'relative flex flex-col rounded-2xl bg-white p-5 ring-1 transition',
+        'relative flex flex-col rounded-2xl bg-surface p-5 ring-1 transition',
         pkg.popular ? 'shadow-float ring-2 ring-brand-500' : 'shadow-card ring-slate-200',
         className,
       )}

@@ -68,7 +68,7 @@ export default function PricingPage() {
           </div>
 
           <div className="mt-10 grid gap-4 md:grid-cols-2">
-            <div className="flex gap-4 rounded-2xl bg-white p-5 ring-1 ring-slate-200">
+            <div className="flex gap-4 rounded-2xl bg-surface p-5 ring-1 ring-slate-200">
               <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600">
                 <UserPlus className="size-5" />
               </span>
@@ -79,7 +79,7 @@ export default function PricingPage() {
                 <p className="mt-1 text-sm text-slate-600">{data.avatarSlot.description}</p>
               </div>
             </div>
-            <div className="flex gap-4 rounded-2xl bg-white p-5 ring-1 ring-slate-200">
+            <div className="flex gap-4 rounded-2xl bg-surface p-5 ring-1 ring-slate-200">
               <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-slate-100 text-slate-600">
                 <Info className="size-5" />
               </span>

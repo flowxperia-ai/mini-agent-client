@@ -15,7 +15,7 @@ export function Toaster() {
         return (
           <div
             key={t.id}
-            className="pointer-events-auto flex w-full max-w-sm animate-rise items-start gap-3 rounded-2xl bg-white p-4 shadow-float ring-1 ring-slate-900/5"
+            className="pointer-events-auto flex w-full max-w-sm animate-rise items-start gap-3 rounded-2xl bg-surface p-4 shadow-float ring-1 ring-slate-900/5"
             role={t.tone === 'error' ? 'alert' : 'status'}
           >
             <Icon className={cn('mt-0.5 size-5 shrink-0', TONES[t.tone])} />

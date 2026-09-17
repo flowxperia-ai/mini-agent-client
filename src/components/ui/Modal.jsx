@@ -47,7 +47,7 @@ export function Modal({ open, onClose, title, description, children, footer, siz
         aria-modal="true"
         aria-label={typeof title === 'string' ? title : undefined}
         className={cn(
-          'relative flex max-h-[92vh] w-full animate-rise flex-col overflow-hidden rounded-t-3xl bg-white shadow-float sm:rounded-2xl',
+          'relative flex max-h-[92vh] w-full animate-rise flex-col overflow-hidden rounded-t-3xl bg-surface shadow-float sm:rounded-2xl',
           SIZES[size],
           className,
         )}

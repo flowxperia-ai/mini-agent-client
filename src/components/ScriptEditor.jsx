@@ -84,7 +84,7 @@ export function ScriptEditor({ register, errors = {}, setValue, script = '', lim
             key={example.label}
             type="button"
             onClick={() => setValue('script', example.text, { shouldValidate: true, shouldDirty: true })}
-            className="rounded-full bg-white px-3 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200 transition hover:bg-brand-50 hover:text-brand-700 hover:ring-brand-200"
+            className="rounded-full bg-surface px-3 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200 transition hover:bg-brand-50 hover:text-brand-700 hover:ring-brand-200"
           >
             {example.label}
           </button>

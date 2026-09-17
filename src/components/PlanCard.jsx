@@ -12,7 +12,7 @@ export function PlanCard({ plan, current = false, highlighted = false, action, c
     <div
       className={cn(
         'relative flex flex-col rounded-3xl p-6 ring-1 transition sm:p-7',
-        highlighted ? 'bg-slate-950 text-white ring-slate-900 shadow-float' : 'bg-white text-slate-900 ring-slate-200 shadow-card',
+        highlighted ? 'bg-zinc-950 text-white ring-white/10 shadow-float' : 'bg-surface text-slate-900 ring-slate-200 shadow-card',
         comingSoon && 'opacity-75',
         className,
       )}

@@ -48,7 +48,7 @@ export function VideoCard({ video, onCopyEmbed, onDelete, onMakePrimary }) {
   return (
     // No overflow-hidden here — it would clip the "..." menu's dropdown, which needs to render
     // outside the card's bounds. VideoThumb rounds its own top corners instead.
-    <article className="group flex flex-col rounded-2xl bg-white shadow-card ring-1 ring-slate-200/80 transition hover:-translate-y-0.5 hover:shadow-float">
+    <article className="group flex flex-col rounded-2xl bg-surface shadow-card ring-1 ring-slate-200/80 transition hover:-translate-y-0.5 hover:shadow-float">
       <button type="button" onClick={open} className="relative block text-left" aria-label={`Open ${video.title}`}>
         <VideoThumb video={video} className="rounded-t-2xl" />
         <div className="absolute inset-x-0 top-0 flex items-start justify-between p-2.5">

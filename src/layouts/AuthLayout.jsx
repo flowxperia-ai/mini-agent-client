@@ -17,10 +17,10 @@ function MiniWidgetIllustration() {
           </div>
         </div>
       </div>
-      <div className="absolute -right-6 -bottom-10 w-44 overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/5">
+      <div className="absolute -right-6 -bottom-10 w-44 overflow-hidden rounded-2xl bg-surface shadow-2xl ring-1 ring-black/5">
         <div className="relative aspect-[3/4] bg-gradient-to-br from-brand-200 to-brand-400">
           <span className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-rose-500 px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-white uppercase">
-            <span className="size-1 animate-pulse rounded-full bg-white" /> Live
+            <span className="size-1 animate-pulse rounded-full bg-surface" /> Live
           </span>
           <div className="absolute inset-x-0 bottom-9 mx-auto size-20 rounded-full bg-white/70" />
           <div className="absolute inset-x-3 bottom-2 rounded-md bg-slate-900/70 px-2 py-1 text-center text-[9px] leading-snug text-white">Hi! Let me show you around…</div>
@@ -35,7 +35,7 @@ function MiniWidgetIllustration() {
 
 export function AuthLayout() {
   return (
-    <div className="grid min-h-screen bg-white lg:grid-cols-[1fr_minmax(0,560px)]">
+    <div className="grid min-h-screen bg-surface lg:grid-cols-[1fr_minmax(0,560px)]">
       <div className="flex flex-col px-5 py-8 sm:px-10">
         <Logo />
         <div className="flex flex-1 items-center justify-center py-10">

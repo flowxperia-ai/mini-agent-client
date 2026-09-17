@@ -7,7 +7,7 @@ const TONES = {
   amber: 'bg-amber-50 text-amber-800 ring-amber-200',
   red: 'bg-rose-50 text-rose-700 ring-rose-200',
   blue: 'bg-sky-50 text-sky-700 ring-sky-200',
-  dark: 'bg-slate-900 text-white ring-slate-900',
+  dark: 'bg-zinc-900 text-white ring-white/10',
 };
 
 const DOTS = {

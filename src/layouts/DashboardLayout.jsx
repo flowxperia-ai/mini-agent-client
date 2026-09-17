@@ -38,7 +38,7 @@ export function DashboardLayout() {
       </aside>
 
       {/* Mobile top bar */}
-      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-slate-200/70 bg-white/85 px-4 backdrop-blur-xl lg:hidden">
+      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-slate-200/70 bg-zinc-950/85 px-4 backdrop-blur-xl lg:hidden">
         <button type="button" onClick={() => setDrawer(true)} className="-ml-1 rounded-lg p-2 text-slate-700" aria-label="Open navigation">
           <Menu className="size-5" />
         </button>
@@ -48,7 +48,7 @@ export function DashboardLayout() {
 
       {drawer && (
         <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true">
-          <div className="absolute inset-0 animate-fade-in bg-slate-950/40" onClick={() => setDrawer(false)} />
+          <div className="absolute inset-0 animate-fade-in bg-zinc-950/40" onClick={() => setDrawer(false)} />
           <div className="absolute inset-y-0 left-0 w-72 max-w-[85vw] animate-rise overflow-y-auto bg-slate-50 shadow-2xl">
             <button type="button" onClick={() => setDrawer(false)} className="absolute top-4 right-3 rounded-lg p-2 text-slate-500" aria-label="Close navigation">
               <X className="size-5" />

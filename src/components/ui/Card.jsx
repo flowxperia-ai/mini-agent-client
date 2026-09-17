@@ -2,7 +2,7 @@ import { cn } from '../../utils/cn.js';
 
 export function Card({ className, children, as: Tag = 'div', ...props }) {
   return (
-    <Tag className={cn('rounded-2xl border border-slate-200/80 bg-white shadow-card', className)} {...props}>
+    <Tag className={cn('rounded-2xl border border-slate-200/80 bg-surface shadow-card', className)} {...props}>
       {children}
     </Tag>
   );

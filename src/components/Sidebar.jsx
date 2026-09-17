@@ -37,7 +37,7 @@ function NavItem({ item, onNavigate }) {
       className={({ isActive }) =>
         cn(
           'group flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition',
-          isActive ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200/80' : 'text-slate-600 hover:bg-white/70 hover:text-slate-900',
+          isActive ? 'bg-surface text-slate-900 shadow-sm ring-1 ring-slate-200/80' : 'text-slate-600 hover:bg-white/70 hover:text-slate-900',
         )
       }
     >
@@ -84,7 +84,7 @@ export function Sidebar({ onNavigate, reserved = 0 }) {
       <div className="mt-auto space-y-4">
         <CreditBalance credits={user?.credits ?? 0} reserved={reserved} />
         <div className="flex items-center gap-3 rounded-xl px-1">
-          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-sm font-semibold text-white">
+          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-sm font-semibold text-white">
             {user?.name?.[0]?.toUpperCase() ?? '?'}
           </span>
           <div className="min-w-0 flex-1">
@@ -93,7 +93,7 @@ export function Sidebar({ onNavigate, reserved = 0 }) {
               {user?.plan === 'GROWTH' ? 'Growth' : 'Starter'} plan
             </Badge>
           </div>
-          <button type="button" onClick={handleLogout} className="rounded-lg p-2 text-slate-400 transition hover:bg-white hover:text-slate-700" aria-label="Sign out" title="Sign out">
+          <button type="button" onClick={handleLogout} className="rounded-lg p-2 text-slate-400 transition hover:bg-surface hover:text-slate-700" aria-label="Sign out" title="Sign out">
             <LogOut className="size-4" />
           </button>
         </div>

@@ -83,7 +83,7 @@ export default function RegisterPage() {
                           ? 'cursor-not-allowed bg-slate-50 ring-slate-200 opacity-70'
                           : active
                             ? 'bg-brand-50/60 ring-2 ring-brand-600'
-                            : 'bg-white ring-slate-200 hover:ring-slate-300',
+                            : 'bg-surface ring-slate-200 hover:ring-slate-300',
                       )}
                     >
                       {active && !option.comingSoon && (

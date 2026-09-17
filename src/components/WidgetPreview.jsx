@@ -98,7 +98,7 @@ export function WidgetPreview({ config, className, height = 560, showControls = 
       <div className="grid place-items-center rounded-2xl bg-gradient-to-b from-slate-100 to-slate-200/70 p-3 ring-1 ring-slate-200 sm:p-4">
         <div
           className={cn(
-            'overflow-hidden bg-white shadow-float ring-1 ring-slate-900/10 transition-all duration-300',
+            'overflow-hidden bg-surface shadow-float ring-1 ring-slate-900/10 transition-all duration-300',
             device === 'mobile' ? 'w-[375px] max-w-full rounded-[28px]' : 'w-full rounded-xl',
           )}
         >
@@ -107,7 +107,7 @@ export function WidgetPreview({ config, className, height = 560, showControls = 
               <span className="size-2.5 rounded-full bg-rose-400" />
               <span className="size-2.5 rounded-full bg-amber-400" />
               <span className="size-2.5 rounded-full bg-emerald-400" />
-              <span className="ml-3 truncate rounded-md bg-white px-3 py-0.5 text-[11px] text-slate-400 ring-1 ring-slate-200">https://yourwebsite.com</span>
+              <span className="ml-3 truncate rounded-md bg-surface px-3 py-0.5 text-[11px] text-slate-400 ring-1 ring-slate-200">https://yourwebsite.com</span>
             </div>
           )}
           {ready ? (

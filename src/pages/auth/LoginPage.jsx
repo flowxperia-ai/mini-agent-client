@@ -71,7 +71,7 @@ export default function LoginPage() {
         <div className="mt-8 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
           <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">Seeded demo accounts</p>
           <p className="mt-1 text-xs text-slate-500">
-            Password <code className="rounded bg-white px-1 py-0.5 ring-1 ring-slate-200">Password123!</code> — run <code>npm run seed</code> first.
+            Password <code className="rounded bg-surface px-1 py-0.5 ring-1 ring-slate-200">Password123!</code> — run <code>npm run seed</code> first.
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {DEMO_ACCOUNTS.map((a) => (
@@ -82,7 +82,7 @@ export default function LoginPage() {
                   setValue('email', a.email);
                   setValue('password', 'Password123!');
                 }}
-                className="rounded-full bg-white px-3 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200 hover:ring-brand-300 hover:text-brand-700"
+                className="rounded-full bg-surface px-3 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200 hover:ring-brand-300 hover:text-brand-700"
               >
                 {a.label}
               </button>

@@ -63,7 +63,7 @@ function Stepper({ step, onStep }) {
               <span
                 className={cn(
                   'grid size-8 shrink-0 place-items-center rounded-full text-sm font-semibold ring-4 transition',
-                  done ? 'bg-brand-600 text-white ring-brand-50' : active ? 'bg-slate-900 text-white ring-slate-200' : 'bg-white text-slate-400 ring-slate-100',
+                  done ? 'bg-brand-600 text-white ring-brand-50' : active ? 'bg-slate-900 text-white ring-slate-200' : 'bg-surface text-slate-400 ring-slate-100',
                 )}
               >
                 {done ? <Check className="size-4" strokeWidth={3} /> : i + 1}
@@ -164,7 +164,7 @@ function AvatarStep({ user, selectedId, onSelect, initialAvatarId }) {
                 onClick={() => setStyle(s)}
                 className={cn(
                   'rounded-full px-3 py-1.5 text-xs font-medium ring-1 transition',
-                  style === s ? 'bg-slate-900 text-white ring-slate-900' : 'bg-white text-slate-600 ring-slate-200 hover:ring-slate-300',
+                  style === s ? 'bg-slate-900 text-white ring-slate-900' : 'bg-surface text-slate-600 ring-slate-200 hover:ring-slate-300',
                 )}
               >
                 {s === 'all' ? 'Any style' : s}
@@ -177,7 +177,7 @@ function AvatarStep({ user, selectedId, onSelect, initialAvatarId }) {
               onClick={() => setExpressiveOnly((v) => !v)}
               className={cn(
                 'flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium ring-1 transition',
-                expressiveOnly ? 'bg-amber-500 text-white ring-amber-500' : 'bg-white text-slate-600 ring-slate-200 hover:ring-slate-300',
+                expressiveOnly ? 'bg-amber-500 text-white ring-amber-500' : 'bg-surface text-slate-600 ring-slate-200 hover:ring-slate-300',
               )}
             >
               <Sparkles className="size-3.5" /> Expressive-ready only
@@ -417,7 +417,7 @@ export default function CreateVideoPage() {
                           onClick={() => setValue('avatarStyle', 'normal')}
                           className={cn(
                             'rounded-xl p-2.5 text-left text-xs font-medium ring-1 transition',
-                            !expressive ? 'bg-brand-50 text-brand-800 ring-2 ring-brand-500' : 'bg-white text-slate-600 ring-slate-200 hover:ring-slate-300',
+                            !expressive ? 'bg-brand-50 text-brand-800 ring-2 ring-brand-500' : 'bg-surface text-slate-600 ring-slate-200 hover:ring-slate-300',
                           )}
                         >
                           <p className="font-semibold">Normal</p>
@@ -428,7 +428,7 @@ export default function CreateVideoPage() {
                           onClick={() => setValue('avatarStyle', 'expressive')}
                           className={cn(
                             'rounded-xl p-2.5 text-left text-xs font-medium ring-1 transition',
-                            expressive ? 'bg-brand-50 text-brand-800 ring-2 ring-brand-500' : 'bg-white text-slate-600 ring-slate-200 hover:ring-slate-300',
+                            expressive ? 'bg-brand-50 text-brand-800 ring-2 ring-brand-500' : 'bg-surface text-slate-600 ring-slate-200 hover:ring-slate-300',
                           )}
                         >
                           <p className="flex items-center gap-1 font-semibold">
@@ -464,7 +464,7 @@ export default function CreateVideoPage() {
                                 ? 'cursor-not-allowed bg-slate-50 text-slate-300 ring-slate-100'
                                 : gesture === g
                                   ? 'bg-brand-50 text-brand-800 ring-2 ring-brand-500'
-                                  : 'bg-white text-slate-600 ring-slate-200 hover:ring-slate-300',
+                                  : 'bg-surface text-slate-600 ring-slate-200 hover:ring-slate-300',
                             )}
                           >
                             <Icon className="size-4" />

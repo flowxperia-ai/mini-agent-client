@@ -39,7 +39,7 @@ export function AvatarCard({ avatar, selected = false, onSelect, disabled = fals
           }
         }}
         className={cn(
-          'group relative overflow-hidden rounded-2xl bg-white text-left ring-1 transition duration-200',
+          'group relative overflow-hidden rounded-2xl bg-surface text-left ring-1 transition duration-200',
           selectable && 'cursor-pointer hover:-translate-y-0.5 hover:shadow-float',
           selected ? 'ring-2 ring-brand-600 shadow-float' : 'ring-slate-200 shadow-card',
           disabled && 'opacity-60',
@@ -47,7 +47,7 @@ export function AvatarCard({ avatar, selected = false, onSelect, disabled = fals
       >
         <div className="relative aspect-[4/5] overflow-hidden bg-slate-100">
           <AvatarImage avatar={avatar} className="transition duration-500 group-hover:scale-[1.03]" />
-          <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-slate-950/40 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-zinc-950/40 to-transparent" />
           <button
             type="button"
             onClick={(e) => {

@@ -38,7 +38,7 @@ export function Menu({ items, label = 'Actions', align = 'right', trigger }) {
         <div
           role="menu"
           className={cn(
-            'absolute z-30 mt-1 w-52 animate-rise overflow-hidden rounded-xl bg-white p-1 shadow-float ring-1 ring-slate-900/5',
+            'absolute z-30 mt-1 w-52 animate-rise overflow-hidden rounded-xl bg-surface p-1 shadow-float ring-1 ring-slate-900/5',
             align === 'right' ? 'right-0' : 'left-0',
           )}
         >

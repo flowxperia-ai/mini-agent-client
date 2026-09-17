@@ -5,14 +5,16 @@ import { cn } from '../../utils/cn.js';
 
 const VARIANTS = {
   primary:
-    'bg-brand-600 text-white shadow-sm shadow-brand-600/25 hover:bg-brand-700 focus-visible:outline-brand-600',
-  secondary: 'bg-white text-slate-800 ring-1 ring-inset ring-slate-200 shadow-xs hover:bg-slate-50 hover:ring-slate-300',
+    'bg-grad-brand text-white shadow-sm shadow-brand-600/25 hover:brightness-110 focus-visible:outline-brand-600',
+  secondary: 'bg-surface text-slate-800 ring-1 ring-inset ring-slate-200 shadow-xs hover:bg-white/5 hover:ring-slate-300',
   ghost: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
   subtle: 'bg-brand-50 text-brand-700 hover:bg-brand-100',
   danger: 'bg-rose-600 text-white shadow-sm hover:bg-rose-700 focus-visible:outline-rose-600',
-  'danger-ghost': 'text-rose-600 hover:bg-rose-50',
-  dark: 'bg-slate-900 text-white shadow-sm hover:bg-slate-800',
-  white: 'bg-white text-slate-900 shadow-sm hover:bg-slate-100',
+  'danger-ghost': 'text-rose-600 hover:bg-rose-500/10',
+  dark: 'bg-zinc-900 text-white shadow-sm hover:bg-zinc-800',
+  // Deliberately literal white (not the dark `surface` token) — meant to stand out as a bright
+  // button against a colourful/dark backdrop (e.g. a hero CTA), not blend in as another card.
+  white: 'bg-white text-zinc-900 shadow-sm hover:bg-white/90',
 };
 
 const SIZES = {

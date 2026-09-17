@@ -46,7 +46,7 @@ export function GenerationProgress({ video }) {
     video.stage === 'ready' ? 100 : video.stage === 'finalizing' ? 94 : video.stage === 'rendering' ? 20 + renderShare * 68 : 8 + Math.min(10, elapsed);
 
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-card ring-1 ring-slate-200/80">
+    <div className="rounded-2xl bg-surface p-6 shadow-card ring-1 ring-slate-200/80">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
           {video.stage === 'ready' ? <CheckCircle2 className="size-5 text-emerald-500" /> : <Loader2 className="size-5 animate-spin text-brand-600" />}

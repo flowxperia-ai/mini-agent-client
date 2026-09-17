@@ -45,6 +45,7 @@ export default defineConfig(({ mode }) => {
         'react-hook-form',
         '@hookform/resolvers/zod',
         'zod',
+        'framer-motion',
       ],
     },
     preview: { port: 4173 },

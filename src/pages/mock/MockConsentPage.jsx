@@ -51,7 +51,7 @@ export default function MockConsentPage() {
       <div className="mb-4 flex items-center gap-2 rounded-full bg-amber-50 px-4 py-1.5 text-xs font-semibold text-amber-900 ring-1 ring-amber-200">
         <FlaskConical className="size-3.5" /> Mock HeyGen consent page — development only
       </div>
-      <div className="w-full max-w-lg rounded-3xl bg-white p-8 shadow-float ring-1 ring-slate-200">
+      <div className="w-full max-w-lg rounded-3xl bg-surface p-8 shadow-float ring-1 ring-slate-200">
         {!group ? (
           <ErrorState error={{ message: 'This consent link is incomplete.' }} />
         ) : error ? (

@@ -11,7 +11,7 @@ import { useKeepAlive } from './hooks/useKeepAlive.js';
 import { useAuthStore } from './store/authStore.js';
 import { useConfigStore } from './store/configStore.js';
 
-const LandingPage = lazy(() => import('./pages/LandingPage.jsx'));
+const Landing = lazy(() => import('./pages/landing/Landing.jsx'));
 const PricingPage = lazy(() => import('./pages/PricingPage.jsx'));
 const LoginPage = lazy(() => import('./pages/auth/LoginPage.jsx'));
 const RegisterPage = lazy(() => import('./pages/auth/RegisterPage.jsx'));
@@ -55,8 +55,11 @@ export default function App() {
       <RouteErrorBoundary>
         <Suspense fallback={<LoadingState className="min-h-[60vh]" />}>
           <Routes>
+            {/* Fully self-contained page (own nav/footer/styles) — deliberately outside
+                MarketingLayout so its chrome isn't doubled up with the app's own. */}
+            <Route index element={<Landing />} />
+
             <Route element={<MarketingLayout />}>
-              <Route index element={<LandingPage />} />
               <Route path="pricing" element={<PricingPage />} />
             </Route>
 

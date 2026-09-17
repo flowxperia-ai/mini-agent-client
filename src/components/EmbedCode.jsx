@@ -7,7 +7,7 @@ export function EmbedCode({ code, className, showHelp = true }) {
   const { copied, copy } = useCopy();
   return (
     <div className={cn('space-y-3', className)}>
-      <div className="group relative overflow-hidden rounded-xl bg-slate-950 ring-1 ring-slate-800">
+      <div className="group relative overflow-hidden rounded-xl bg-zinc-950 ring-1 ring-zinc-800">
         <div className="flex items-center justify-between border-b border-white/5 px-4 py-2">
           <span className="text-[11px] font-medium tracking-wide text-slate-400 uppercase">HTML</span>
           <button

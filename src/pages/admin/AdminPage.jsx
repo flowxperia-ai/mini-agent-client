@@ -484,7 +484,7 @@ export default function AdminPage() {
   return (
     <div className="animate-rise">
       <PageHeader eyebrow="Operations" title="Admin" description="Users, credits, generation jobs, webhooks and payments. Every credit change goes through the ledger." />
-      <div className="mb-6 flex gap-1 overflow-x-auto rounded-2xl bg-white p-1 shadow-card ring-1 ring-slate-200/80" role="tablist">
+      <div className="mb-6 flex gap-1 overflow-x-auto rounded-2xl bg-surface p-1 shadow-card ring-1 ring-slate-200/80" role="tablist">
         {TABS.map((t) => (
           <button
             key={t.key}

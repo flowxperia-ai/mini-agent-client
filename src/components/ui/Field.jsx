@@ -3,7 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import { cn } from '../../utils/cn.js';
 
 const control =
-  'block w-full rounded-xl border-0 bg-white text-sm text-slate-900 shadow-xs ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 transition focus:ring-2 focus:ring-inset focus:ring-brand-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500';
+  'block w-full rounded-xl border-0 bg-surface text-sm text-slate-900 shadow-xs ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 transition focus:ring-2 focus:ring-inset focus:ring-brand-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500';
 const invalid = 'ring-rose-300 focus:ring-rose-500';
 
 export function FieldShell({ id, label, hint, error, required, children, className, trailing }) {
@@ -118,11 +118,13 @@ export function Switch({ checked, onChange, label, description, disabled, id }) 
         onClick={() => onChange(!checked)}
         className={cn(
           'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors duration-200 disabled:opacity-50',
-          checked ? 'bg-brand-600' : 'bg-slate-200',
+          checked ? 'bg-brand-600' : 'bg-zinc-700',
         )}
       >
         <span
           className={cn(
+            // Deliberately literal white — the sliding knob needs contrast against the track
+            // (brand purple or zinc-700) regardless of theme, not the page's dark card colour.
             'pointer-events-none mt-0.5 ml-0.5 inline-block size-5 rounded-full bg-white shadow-sm ring-0 transition-transform duration-200',
             checked ? 'translate-x-5' : 'translate-x-0',
           )}
@@ -148,7 +150,7 @@ export function Segmented({ value, onChange, options, className, size = 'md' }) 
             className={cn(
               'flex items-center gap-1.5 rounded-lg font-medium transition',
               size === 'sm' ? 'px-2.5 py-1 text-xs' : 'px-3 py-1.5 text-[13px]',
-              active ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800',
+              active ? 'bg-surface text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800',
             )}
           >
             {o.icon && <o.icon className="size-3.5" />}

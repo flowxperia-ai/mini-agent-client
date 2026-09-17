@@ -96,7 +96,7 @@ function StockLibrary({ avatars }) {
                 onClick={() => setStyle(s)}
                 className={cn(
                   'rounded-full px-3 py-1.5 text-xs font-medium ring-1 transition',
-                  style === s ? 'bg-slate-900 text-white ring-slate-900' : 'bg-white text-slate-600 ring-slate-200 hover:ring-slate-300',
+                  style === s ? 'bg-slate-900 text-white ring-slate-900' : 'bg-surface text-slate-600 ring-slate-200 hover:ring-slate-300',
                 )}
               >
                 {s === 'all' ? 'Any style' : s}
@@ -287,7 +287,7 @@ function ImportAvatarList({ slots, onImported }) {
     <div className="space-y-3">
       <div className="grid gap-3 sm:grid-cols-2">
         {data.avatars.map((a) => (
-          <div key={a.providerAvatarId} className="flex items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-slate-200">
+          <div key={a.providerAvatarId} className="flex items-center gap-3 rounded-2xl bg-surface p-4 ring-1 ring-slate-200">
             {a.thumbnailUrl ? (
               <img src={a.thumbnailUrl} alt="" className="size-14 shrink-0 rounded-xl object-cover" />
             ) : (
@@ -552,7 +552,7 @@ export default function AvatarsPage() {
         actions={
           <>
             {data?.slots && (
-              <span className="rounded-full bg-white px-3 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200">
+              <span className="rounded-full bg-surface px-3 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200">
                 {data.slots.used} / {data.slots.available} avatar slots used
               </span>
             )}

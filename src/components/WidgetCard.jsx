@@ -75,7 +75,7 @@ export function WidgetCard({ widget, onChanged }) {
   return (
     // No overflow-hidden here — it would clip the "..." menu's dropdown, which needs to render
     // outside the card's bounds. The thumbnail rounds its own top corners instead.
-    <article className="group flex flex-col rounded-2xl bg-white shadow-card ring-1 ring-slate-200/80 transition hover:-translate-y-0.5 hover:shadow-float">
+    <article className="group flex flex-col rounded-2xl bg-surface shadow-card ring-1 ring-slate-200/80 transition hover:-translate-y-0.5 hover:shadow-float">
       <button type="button" onClick={open} className="relative block text-left" aria-label={`Edit ${widget.name}`}>
         <div className="relative aspect-[4/5] overflow-hidden rounded-t-2xl bg-slate-100">
           {video?.thumbnailUrl ? (
